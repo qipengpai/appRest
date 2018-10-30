@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.base.dao.sys.OrgMapper">
+	<select id="queryOrganizationByOrgIds" resultType="java.util.HashMap">
+	  select id, orgName, orgCode, pid, eType eLevel from organization where id in
+	  <foreach item="item" index="index" collection="array"
+	      open="(" separator="," close=")">
+	        #{item}
+	  </foreach>
+	</select>
+	
+	<select id="queryAllOrganization" resultType="com.company.platform.base.model.sys.Organization">
+		select * from organization order by eSort
+	</select>
+	
+	<select id="selectByPrimaryKey" parameterType="java.lang.String" resultType="com.company.platform.base.model.sys.Organization">
+		select id, orgName, orgCode, pid, eLevel, isLeaf, isValid, eSort, eType
+        from organization
+        where id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="queryStaffByOrgId" resultType="java.util.HashMap">
+		select u.id, i.realName, u.createTime, i.mobile, u.isValid, u.userName, i.email, org.orgName
+		from sys_user u inner join user_dept_rel r on u.id = r.userId inner join organization org on org.id = r.orgId
+		left join sys_user_info i on u.id = i.userId
+		where r.orgId in
+		<foreach item="item" index="index" collection="array"
+	      open="(" separator="," close=")">
+	        #{item}
+	  	</foreach>
+	</select>
+</mapper>

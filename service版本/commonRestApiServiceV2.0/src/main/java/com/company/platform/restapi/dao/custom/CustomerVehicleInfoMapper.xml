@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.custom.CustomerVehicleInfoMapper">
+	<insert id="insertCustomerVehicleInfo" parameterType="com.company.platform.restapi.model.custom.CustomerVehicleInfo"> 
+		INSERT INTO 
+			customer_vehicle_info
+		(
+			id,
+			hasVehicle,
+			vehicleNo
+		) 
+		VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{hasVehicle, jdbcType=TINYINT},
+			#{vehicleNo, jdbcType=VARCHAR}
+		)
+	</insert>
+</mapper>

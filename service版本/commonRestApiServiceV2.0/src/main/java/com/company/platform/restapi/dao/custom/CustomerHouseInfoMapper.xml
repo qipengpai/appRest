@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.custom.CustomerHouseInfoMapper">
+	<insert id="insertCustomerHouseInfo" parameterType="com.company.platform.restapi.model.custom.CustomerHouseInfo"> 
+		INSERT INTO 
+			customer_house_info 
+		(
+			id,
+			hasHouse,
+			ownHouseFlag,
+			ownHouseArea,
+			currentHouseType,
+			currentHouseArea
+		) 
+		VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{hasHouse, jdbcType=SMALLINT},
+			#{ownHouseFlag, jdbcType=TINYINT},
+			#{ownHouseArea, jdbcType=VARCHAR},
+			#{currentHouseType, jdbcType=VARCHAR},
+			#{currentHouseArea, jdbcType=VARCHAR}
+		)
+	</insert>
+</mapper>

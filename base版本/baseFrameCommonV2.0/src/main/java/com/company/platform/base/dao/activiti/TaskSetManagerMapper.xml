@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.base.dao.activiti.TaskSetManagerMapper">
+	<select id="getFirstFlowInfo" resultType="java.util.HashMap">
+		select act.id id, act.taskName taskName, act.taskKey taskKey, act.operDate operDate from act_taskset act where act.taskSort = 1 and act.productId = #{productId} and act.wfId = #{wfId} limit 0, 1
+	</select>
+	
+	<select id="getTheActTaskset" resultType="com.company.platform.base.model.activiti.ActTaskset">
+		select id, wfId, wfKey, productId, userIds, organizationIds, functionIds, authIds, posterids, roleIds, userId, taskName, taskkey, taskSort, operDate from act_taskset where productId = #{productId} and wfId = #{wfId} and taskkey = #{taskKey} order by operDate desc limit 0, 1
+	</select>
+	
+	<select id="getWsFunctions" resultType="java.util.HashMap" parameterType="java.lang.String">
+		select id, functionName, btnStyle, btnText, nextTaskKey, choose, noticeFlag, noticeTemp, expression, variableJson, sort from ws_function where taskSetId = #{taskSetId} order by sort
+	</select>
+	
+	<select id="selectByProductId" resultType="com.company.platform.base.model.activiti.ActTaskset" 
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			wfId,
+			wfKey,
+			productId,
+			userIds,
+			organizationIds,
+			functionIds,
+			authIds,
+			userId,
+			taskName,
+			taskkey,
+			taskSort,
+			taskType,
+			operDate,
+			roleIds,
+			posterids
+		FROM
+			act_taskset
+		WHERE
+			productId = #{productId}
+		and wfId = #{processId}
+		order by taskSort asc
+	</select>
+	
+	<select id="getHandleReasons" resultType="java.util.Map" parameterType="java.lang.String">
+		SELECT
+			id,
+			type,
+			reason,
+			commentId,
+			commitDate
+		FROM
+			act_app_reason
+		WHERE
+			procInstId = #{processInstanceId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getAUComments" resultType="java.util.Map" parameterType="java.lang.String">
+		SELECT
+			c.TYPE_,
+			c.TIME_,
+			c.ACTIVITI_ID_,
+			a.ACT_NAME_,
+			c.MESSAGE_,
+			a.START_TIME_,
+			a.END_TIME_
+		FROM
+			act_au_comment c,
+			act_hi_actinst a
+		WHERE
+			c.PROC_INST_ID_ = a.PROC_INST_ID_
+		AND c.ACTIVITI_ID_ = a.ACT_ID_
+		AND c.PROC_INST_ID_ = #{processInstanceId, jdbcType=VARCHAR}
+	    order by c.ID_ desc
+	</select>
+	
+	<select id="findFunctionInfoByFunctionName" resultType="com.company.platform.base.model.activiti.FunctionInfo"
+		parameterType="java.lang.String">
+		SELECT
+			f.id,
+			f.functionName,
+			f.btnStyle,
+			f.btnText,
+			f.nextTaskKey,
+			f.choose,
+			f.expression,
+			f.variableJson,
+			f.sort,
+			f.taskSetId
+		FROM
+			ws_function f,
+			act_taskset t
+		WHERE
+			f.taskSetId = t.id
+		AND t.productId = #{productId, jdbcType=VARCHAR} 
+		and t.wfId = #{wfId, jdbcType=VARCHAR} 
+		and t.taskkey = #{taskKey, jdbcType=VARCHAR}
+		and f.functionName = #{functionName, jdbcType=VARCHAR} 
+		limit 0, 1
+	</select>
+	<select id="getVariableByNextTaskKey" resultType = "java.lang.String" parameterType="java.lang.String">
+		SELECT
+			wf.variableJson
+		FROM
+			ws_function wf,
+			act_taskset a
+		WHERE
+			wf.taskSetId = a.id
+		AND wf.nextTaskKey = #{taskKey} 
+		and a.wfId = #{wfId} 
+		and a.productId = #{productId} 
+		order by wf.sort
+		limit 0, 1
+	</select>
+	
+	
+	
+	<select id="getButton" resultType="com.company.platform.base.model.activiti.FunctionInfo"
+		parameterType="java.lang.String">
+		SELECT
+			f.id,
+			f.functionName,
+			f.btnStyle,
+			f.btnText,
+			f.nextTaskKey,
+			f.choose,
+			f.expression,
+			f.variableJson,
+			f.sort,
+			f.taskSetId
+		FROM
+			ws_function f,
+			act_taskset t
+		WHERE
+			f.taskSetId = t.id
+		AND t.productId = #{productId, jdbcType=VARCHAR} 
+		and t.wfId = #{wfId, jdbcType=VARCHAR} 
+		and t.taskkey = #{taskKey, jdbcType=VARCHAR}
+		
+		order by f.sort asc
+	</select>
+</mapper>

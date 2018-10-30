@@ -1,0 +1,560 @@
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">     
+<meta content="black" name="apple-mobile-web-app-status-bar-style">     
+<meta content="telephone=no" name="format-detection">
+<title>PICC金融风控决策系统</title>
+<link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"></link>
+
+</head>
+
+<body>
+	<div class="main tabs">
+	<div class="pop" id="loading" style="display:none">
+		<div class="popbox">
+			<div class="loading"><img th:src="@{/img/loading.gif}" alt=""><span>处理中</span></div>
+		</div>
+		<div class="popbg"></div>
+	</div>
+	
+	<div class="pop" id="alertDiv" style="display:none">
+		<div class="popbox">
+			<div class="pop-txt">
+				<span id="alertTxt">暂存成功</span>
+			</div>
+			<div class="btn">
+				<a href="JavaScript:void(0);" onclick="$('#alertDiv').css('display','none')" style="width:100%">确定</a>
+			</div>
+		</div>
+		<div class="popbg"></div>
+	</div>
+	
+	
+		<div class="tabs-bar">
+			<div class="welcome"><img th:src="@{/img/icon-1.png}" alt=""><span><font>您好: <span id="loginName" value=""></span></font></span><a id="logout" >退出</a></div>
+			<ul class="tabs">
+				<li><a href="#tabs-1" id="tab1">进 件</a></li>
+				<li><a href="#tabs-2" id="tab2">我的</a></li>
+			</ul>
+		</div>
+		<form id="tabs-1" class="tab_content entrybox">
+			<div class="box">
+				<label for="">
+					<span>借贷产品</span>
+					<div class="selectbox">
+						<select id="loanProductId" name="loanProductId" >
+							<option value="请选择">请选择</option>
+ 						</select>
+					</div>
+				</label>
+				<label for="" style="display:none;">
+					<span>贷款申请代码</span>
+					<input type="text" value="" id="code" name="code" readonly="readonly" placeholder="贷款申请代码">
+				</label>
+				<label for="">
+					<span>客户类型</span>
+					<div class="selectbox">
+						<select id="customerType" name="customerType" readonly="readonly" >
+							<option value="0" selected>个人客户</option>
+						</select>
+					</div>
+				</label>
+				<label for="">
+					<span>证件类型</span>
+					<div class="selectbox">
+						<select id="credentialType" name="credentialType">
+						</select>
+					</div>
+				</label>
+				<label for="" class="scanning">
+					<span>证件号码</span>
+					<input type="text" id="credentialNo" name="credentialNo" placeholder="请输入身份证号码">
+					<a href="javascript:void(0)"><img th:src="@{/img/scanning.png}"></a>
+				</label>
+				<label for="">
+					<span>申请人姓名</span>
+					<input type="hidden" id="customerId" name="customerId"/>
+					<input type="hidden" id="orgId" name="orgId"/>
+					<input type="text" id="name" name="name" placeholder="请输入申请人姓名">
+				</label>
+				<label for="">
+					<span>手机号</span>
+					<input type="number" id="mobilePhone" name="mobilePhone" placeholder="请输入手机号">
+				</label>
+				<label for="">
+					<span>申请金额（元）</span>
+					<input type="tel"  id="applyAmountInput" onkeyup="onlyNumber(this)"  placeholder="请输入申请金额">
+					<div class="selectbox" style="display:none" id="applyAmountDiv">
+						<select id="applyAmountSelect" >
+							<option value="">请选择</option>
+ 						</select>
+					</div>
+				</label>
+				<div class="range-tip" style="display:none" id="tip">申请金额范围在1000~5000元之间</div>
+
+				<label for="" style="display:none;">
+					<span>借贷期限单位</span>
+					<div class="selectbox">
+						<select id="termUnit" name="termUnit">
+ 							<option value="2" selected>月</option>
+						</select>
+					</div>
+				</label>
+				<label for="">
+					<span>借贷期限</span>
+					 <input type="tel" id="termCountInput"  onkeyup="onlyNumber(this)" placeholder="借贷期限">
+ 					 <div class="selectbox" style="display:none"  id="termCountDiv">
+						<select id="termCountSelect">
+							<option value="">请选择</option>
+						</select>
+
+					</div>
+				</label>
+			</div>
+			<div class="btnbox">
+				<input type="button" id="save" value="下一步" class="button">
+			</div>
+		</form>
+		<div id="tabs-2" class="tab_content" style="display:none">
+			<div class="box">
+				<h5>进件管理</h5>
+				<div class="boxcontent">
+					<ul class="tip-number" id="applymg" ></ul>
+					<div class="btnbox cl_f">
+						<div><a href="#" id="apply_manage" class="button button-blue">进件管理</a></div>
+						<div><a href="#" id="manual_check" class="button button-orange">人工复核</a></div>
+					</div>
+				</div>
+			</div>
+			<div class="box">
+				<h5>信审管理</h5>
+				<div class="boxcontent">
+					<ul class="tip-number number-2" id="trustmg"></ul>
+					<div class="btnbox cl_f">
+						<div><a href="#" class="button button-green" id="result_detail">信审管理</a></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/jquery-ui.min.js}"></script>
+<script th:src="@{/js/jquery.cookie.js}"></script>
+<script th:src="@{/js/global.js}"></script>
+<script th:src="@{/js/json.js}"></script>
+<script th:src="@{/js/weixin.js}"></script>
+<script th:src="@{/js/redirect.js}"></script>
+<script type="text/javascript">
+$(".tabs").tabs();
+	var productMap={},openId,sign,param={};
+	$(function(){
+        $.getUrlParam = function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+        sign = $.getUrlParam("sign");
+        if (sign != null){
+            if(sign == 1){
+                $("#tab1").click();
+			}else{
+                $("#tab2").click();
+			}
+		}
+		openId = $.cookie('openId');
+		clearData();
+		$("#apply_manage").click(function(){
+			//window.location.href="../wechat/apply_manage?taskStatus=1&openId=" + openId;
+			param = {taskStatus:1,openId:openId,method:'apply_manage'};
+            redirect(param);
+        });
+        $("#manual_check").click(function(){
+            //window.location.href="../wechat/apply_manage?taskStatus=2&openId=" + openId;
+            param = {taskStatus:2,openId:openId,method:'apply_manage'};
+            redirect(param);
+        });
+        $("#result_detail").click(function(){
+            //window.location.href="../wechat/apply_manage?taskStatus=3&openId=" + openId;
+            param = {taskStatus:3,openId:openId,method:'apply_manage'};
+            redirect(param);
+        });
+		// 综合数据
+		$.zkbr.ajax({
+			url: "../wechat/getLoanEntryCreditNum",
+			type:"post",
+			dataType:"json",
+			data:{"openId":openId},
+			success:function(data){
+			if(data.exceptionFlag=="0000"&&data.responseCode=="00000000"){
+					var apply = '';
+					apply += '<li><p>' + data.resultSet.entrySuccessNum + '<span>通过</span></p></li>';
+					apply += '<li><p>' + data.resultSet.entryFailNum + '<span>拒绝</span></p></li>';
+					apply += '<li><p>' + data.resultSet.personCheckNum + '<span>人工复核</span></p></li>';
+					$("#applymg").append(apply);
+
+					var trust = '';
+					trust += '<li><p>' + data.resultSet.creditSuccessNum + '<span>通过</span></p></li>';
+					trust += '<li><p>' + data.resultSet.creditFailNum + '<span>拒绝</span></p></li>';
+					$("#trustmg").append(trust);
+				}else{
+                    $("#alertDiv").css('display','block');
+                    $("#alertTxt").html(data.responseMessage);
+					//alert(data.responseMessage);
+				}
+
+			}
+		});
+
+		// 登陆用户名
+		$.zkbr.ajax({
+			url: "../wechat/getOpenUser",
+			type:"post",
+			dataType:"json",
+			data:{"openId":openId},
+			success:function(data){
+				if(data.status=="200"){
+					$("#loginName").text(data.name);
+				} else {
+					$("#loginName").text("");
+				}
+			}
+		});
+
+
+		 $("#save").click(function(){
+
+			    var form = $('#tabs-1').serializeJson();
+			 	form["applyTime"] = getCurrentDateTime();
+
+			    if($("#applyAmountInput").val()!='')
+			    {
+			    	form["applyAmount"] = $("#applyAmountInput").val();
+			    }else
+			    {
+			    	form["applyAmount"] = $("#applyAmountSelect").val();
+ 			    }
+
+			    if($("#termCountInput").val()!='')
+			    {
+			    	form["termCount"] = $("#termCountInput").val();
+			    }else
+			    {
+			    	form["termCount"] = $("#termCountSelect").val();
+ 			    }
+			    console.log(form);
+
+			    if( validateForm(form))
+			    {
+			    	$("#loading").css("display","block");
+ 			    	$.zkbr.ajax({
+			 		  	url: "../wechat/checkyys",
+			 		  	type:"post",
+			 		  	dataType:"json",
+			 		  	data: {idCard:$("#credentialNo").val(),name:$("#name").val(),phone:$("#mobilePhone").val(),openId:openId},
+			 		  	success:function(data){
+							if(data.status=="200"){
+								form["openId"] = openId;
+						    	$.zkbr.ajax({
+						 		  	url: "../wechat/loanApplyOneSetp",
+						 		  	type:"post",
+						 		  	dataType:"json",
+						 		  	data: form,
+						 		  	success:function(data){
+										if(data.exceptionFlag=="0000"&&data.responseCode=="00000000"){
+ 				 							var loanProductApplyId = data.resultSet.loanProductApplyId;
+				 						 	//window.location.href="../wechat/loan_apply?loanProductApplyId="+loanProductApplyId+"&openId="+openId+"&htmlFlag="+0;
+                                            param = {loanProductApplyId : loanProductApplyId,taskStatus:1,openId:openId,htmlFlag: 0,method:'loan_apply'};
+                                            redirect(param);
+										}else{
+				 							$("#loading").hide();
+                                            $("#alertDiv").css('display','block');
+                                            $("#alertTxt").html(data.responseMessage);
+                                            //alert(data.responseMessage);
+										}
+				 		 		  	}
+					 			}); 
+	 						}else{
+	 							$("#loading").hide();
+                                $("#alertDiv").css('display','block');
+                                $("#alertTxt").html(data.message);
+								//alert(data.message);
+							}
+	 		 		  	}
+		 			}); 
+  			    	
+			    }
+ 					
+				    
+		 });
+ 
+		$("#mobilePhone").change(function(){
+			var str = $("#mobilePhone").val();	
+		      var myreg = /^(((13[0-9]{1})|(14[0-9]{1})|(17[0]{1})|(15[0-3]{1})|(15[5-9]{1})|(18[0-9]{1}))+\d{8})$/;         
+		      if( !myreg.test(str)){   
+		    	  $("#alertDiv").css('display','block');
+				  $("#alertTxt").html("手机号码号格式不正确！");
+ 				    return false;
+				}
+		})
+		$("#credentialNo").change(function(){
+			if($("#credentialType").val()==0){
+				var str = $("#credentialNo").val();			
+				var re_card_id = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+				if( !re_card_id.test(str)){   
+				    $("#alertDiv").css('display','block');
+				    $("#alertTxt").html("身份证件号格式不正确！");
+ 				    return false;
+				}else{
+ 					//根据身份证好查询申请人信息
+					$.zkbr.ajax({
+			 		  	url: "../wechat/getCsustomerPublicInfo",
+			 		  	type:"post",
+			 		  	dataType:"json",
+			 		  	data:{"idCard":str,"openId":openId},
+                        async:false,
+                        success:function(data){
+
+							if(data.status==200){
+								var member = data.member;
+								if(member!='')
+								{
+									$("#name").val(member.customerName);
+									$("#name").prop("readonly","readonly");
+									$("#mobilePhone").val(member.mobilePhone);
+									$("#customerId").val(member.id);
+									$("#orgId").val(member.orgId);
+								}else
+								{
+									$("#name").val('');
+									$("#mobilePhone").val('');
+									$("#customerId").val('');
+									$("#name").removeAttr("readonly"); 
+								}
+								
+							}else{
+								$("#alertDiv").css('display','block');
+								$("#alertTxt").html(data.responseMessage);
+ 							}
+							
+			 		  	}
+					});
+					
+					
+				}
+			}
+			
+		})
+
+				//选择产品获取产品编码
+		$("#loanProductId").on('change',function(){			
+			if($(this).val()!=''){				
+		        var productId = $(this).find('option:selected').val();
+		        var obj = productMap[productId];
+		        if(obj.amountLimitType==0) //范围形式
+		        {
+		        	$("#applyAmountInput").val(obj.singleDefaultAmount);
+		        	$("#applyAmountDiv").css("display","none");
+		        	
+		        	$("#tip").css("display","block");
+		        	$("#tip").html("申请金额范围在"+obj.singleMinAmount+"~"+obj.singleMaxAmount+"元之间");
+		        }
+		        
+		        if(obj.amountLimitType==1) //固定值
+		        {
+		        	$("applyAmountInput").prop("type","hidden");
+		        	$("applyAmountDiv").css("display","block");
+		        	var singleAmount  = obj.singleAmounts.split(",");
+		        	$("#applyAmountSelect").empty();
+					 $("#applyAmountSelect").append("<option value='' >请选择</option>");
+		        	$.each(singleAmount,function(index,value){
+  		        	     $("#applyAmountSelect").append("<option value="+value+" >"+value+"</option>");
+		        	});
+		        }
+ 		        
+		        if(obj.monthsLimitType==0)
+		        {
+		        	$("#termCountInput").val(obj.singleDefaultMonths);
+		        	$("#termCountDiv").css("display","none");
+		        }
+ 		        
+		        if(obj.monthsLimitType==1)//固定值
+		        {
+ 		        	$("#termCountInput").prop("type","hidden");
+		        	$("#termCountDiv").css("display","block");
+		        	
+		        	var singleMonths  = obj.singleMonths.split(",");
+		        	$("#termCountSelect").empty();
+					 $("#termCountSelect").append("<option value='' >请选择</option>");
+		        	$.each(singleMonths,function(index,value){
+		        		 if(value==obj.singleDefaultMonths)
+		        		 {
+		        			 $("#termCountSelect").append("<option value="+value+" selected>"+value+"月</option>");
+		        		 }else
+		        		 {
+		        			 $("#termCountSelect").append("<option value="+value+" >"+value+"月</option>");
+		        		 }
+		        		
+  		        	    
+		        	});
+		        }
+ 
+		        
+		 		$.zkbr.ajax({
+		 		  	url: "../wechat/getProductCode",
+		 		  	type:"post",
+		 		  	dataType:"json",
+		 		  	data:{"productId":productId,"openId":openId},
+		 		  	success:function(data){
+ 						if(data.status=200){
+ 							var code = data.code;
+							$("#code").val(code);
+ 						}else{
+ 							$("#alertDiv").css('display','block');
+							$("#alertTxt").html(data.responseMessage);
+						}
+ 		 		  	}
+	 			});
+		 		
+ 		    } 
+			
+		})
+
+		//用户退出
+        $("#logout").click(function(){
+            console.log( $.cookie("openid"));
+            //window.location.href="../wechat/logout?openId=" + openId;
+            param = {openId:openId,htmlFlag: 0,method:'logout'};
+            redirect(param);
+            //$.cookie("openid","");
+        });
+
+		//借贷产品
+		$.zkbr.ajax({
+ 		  	url: "../wechat/getProductList",
+ 		  	type:"post",
+ 		  	dataType:"json",
+ 			data:{"openId":openId},
+ 			async:false,
+   		  	success:function(data){
+
+				if(data.status==200)
+				{
+					//证件类型
+					var credentialType = data.credentialType;
+					$("#credentialType").empty();
+					for(var i in credentialType)
+					{
+						$("#credentialType").append("<option value="+i+" >"+credentialType[i]+"</option>");
+					}
+					//借贷产品
+					var productList = data.productList;
+					$("#loanProductId").empty();
+					$("#loanProductId").append("<option value=''>请选择</option>");
+					$.each(productList,function(n,value) {   
+ 				         $("#loanProductId").append("<option value="+value.id+" >"+value.name+"</option>");
+ 				         productMap[value.id] = value;
+ 				  	});
+					console.log(data);
+					//模拟change点击事件
+					$('#loanProductId').get(0).selectedIndex=1
+					$('#loanProductId').trigger("change");
+				}
+ 		  	}
+
+		});
+		
+		 
+	});
+	
+	
+	function getCurrentDateTime()
+	{
+		var date = new Date();
+        this.year = date.getFullYear();
+        this.month = date.getMonth() + 1;
+        this.date = date.getDate();
+         this.hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        this.minute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        this.second = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+        var currentTime =  this.year + "-" + this.month + "-" + this.date + " " + this.hour + ":" + this.minute + ":" + this.second;
+		return currentTime;
+	}
+	
+	function validateForm(form)
+	{
+        if(form["loanProductId"]=='' ||form["loanProductId"]=='请选择')
+        {
+            $("#alertDiv").css('display','block');
+            $("#alertTxt").html("借贷产品不能为空！");
+            return false;
+        }
+		 if(form["applyAmount"]=='')
+	     {
+			 $("#alertDiv").css('display','block');
+			 $("#alertTxt").html("申请金额不能为空！");
+ 	    	return false;
+	     }
+	     if(form["termCount"]=='')
+	     {
+	    	 $("#alertDiv").css('display','block');
+			 $("#alertTxt").html("借贷期限不能为空！");
+ 	    	return false;
+	     }
+	     if(form["credentialNo"]=='')
+	     {
+	    	 $("#alertDiv").css('display','block');
+			 $("#alertTxt").html("证件号码不能为空！");
+ 	    	 return false;
+	     }
+	     if(form["credentialNo"]!='')
+	     {
+	    	 var re_card_id = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+				if( !re_card_id.test(form["credentialNo"])){
+					 $("#alertDiv").css('display','block');
+					 $("#alertTxt").html("证件号格式不正确");
+ 				    return false;
+				}
+	     }
+	     
+	     if(form["name"]=='')
+	     {
+	    	 $("#alertDiv").css('display','block');
+			 $("#alertTxt").html("申请人姓名不能为空！");
+ 	    	 return false;
+	     }
+	     if(form["mobilePhone"]=='')
+	     {
+	    	 $("#alertDiv").css('display','block');
+			 $("#alertTxt").html("手机号不能为空！");
+ 	    	 return false;
+	     }
+	     if(form["mobilePhone"]!='')
+		{
+	    	 var myreg = /^(((13[0-9]{1})|(14[0-9]{1})|(17[0]{1})|(15[0-3]{1})|(15[5-9]{1})|(18[0-9]{1}))+\d{8})$/;         
+		     if(!myreg.test(form["mobilePhone"])){   
+		    	 $("#alertDiv").css('display','block');
+				 $("#alertTxt").html("手机号码号格式不正确！");
+ 				   return false;
+			}
+		}
+	    	 
+		return true;
+	}
+	
+	
+	function clearData()
+	{
+		$("#code").val('');
+		$("#credentialNo").val('');
+		$("#customerId").val('');
+		$("#orgId").val('');
+		$("#name").val('');
+		$("#mobilePhone").val('');
+	}
+	
+	</script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+#tomcat配置
+server:
+  port: 9999
+  context-path: /
+  max-http-header-size: 2048
+  compression:
+    enabled: false
+    excluded-user-agents: gozilla,traviata
+    min-response-size: 2048
+    mime-types: application/xml,text/html,text/xml,text/plain,text/css,application/javascript,text/javascript,application/json
+  session:
+    timeout: 360000
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1200
+    max-connections: 500
+    max-http-post-size: 20480000
+    
+management:
+  security: 
+    enabled: false
+    
+endpoints:
+  health:
+    sensitive: true
+#微信配置
+wechat:
+  miniapp:
+    appid: wx151d01fce92e6a70
+    secret: c88fbc62963e8281845d32227446a8bd
+    token: 
+    aesKey: 
+    msgDataFormat: JSON  
+#分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+ 
+
+#线程数
+threads: 
+  pool: 
+    corePoolSize: 100
+    maxPoolSize: 200
+    queueCapacity: 50
+
+spring:
+  profiles:
+    active: dev    
+  http:
+    multipart:
+      enabled: true
+      max-file-size: 20480000
+      max-request-size: 20480000
+---
+#通用配置
+spring:
+  profiles: dev
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+  session:
+    store-type: none
+  application:
+    name: rest基础框架集群
+  redis: 
+    database: 0
+    host: 123.57.58.141
+    password: Zkbr1234
+    port: 6379
+    timeout: 60000
+    pool:
+      max-active: 10
+      max-idle: 10
+      max-wait: 60000
+      min-idle: 5
+  thymeleaf: 
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: LEGACYHTML5
+    cache: false
+    encoding: UTF-8
+    content-type: text/html
+  cache:
+    type: guava  
+#日志
+logging:
+  #path: /usr/log
+  #file: common.log
+  level:
+    root: error,debug,info
+    com.company.platform.base: error,debug,info
+    com.company.platform.demo: error,debug,info
+    com.company.platform.security: error,debug,info
+    com.company.platform.home: error,debug,info
+    com.company.platform.openRestApi: error,debug,info
+    com.company.platform.restapi: error,debug,info
+    
+#数据库连接
+master:
+  datasource:
+    #url: jdbc:mysql://rds13i3iv396h588bxbdo.mysql.rds.aliyuncs.com:3306/cashloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://localhost:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://192.168.1.50:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://rds13i3iv396h588bxbdo.mysql.rds.aliyuncs.com:3306/cashloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://localhost:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://rds13i3iv396h588bxbdo.mysql.rds.aliyuncs.com:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://localhost:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://192.168.1.50:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://rm-2ze9k3sxcw92di8rh.mysql.rds.aliyuncs.com:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    #url: jdbc:mysql://localhost:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+
+    driverClassName: com.mysql.jdbc.Driver
+    initialSize: 50
+    minIdle: 30
+    maxActive: 200
+    maxWait: 20000
+    username: loan
+    password: Loan1234
+#    username: root
+#    password: 123456
+    timeBetweenEvictionRunsMillis: 360000
+    filters: stat,wall,log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT X
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    
+    
+#httpclient配置
+httpclient: 
+  config: 
+    #代理的host
+    proxyhost: 123.57.58.141
+    #代理端口
+    proxyPort: 8888
+    #连接超时或异常重试次数  
+    retryTime: 3  
+    #长连接保持时间，单位为s  
+    keepAliveTime: 1  
+    #连接池最大连接数  
+    connMaxTotal: 20  
+    maxPerRoute: 20  
+    #连接超时时间，单位ms  
+    connectTimeout: 2000  
+    #请求超时时间  
+    connectRequestTimeout: 2000  
+    #sock超时时间  
+    socketTimeout: 2000  
+    #连接存活时间，单位s  
+    timeToLive: 60
+    
+    
+---
+#通用配置
+spring:
+  profiles: test
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+  session:
+    store-type: none
+  application:
+    name: rest基础框架集群
+  redis: 
+    database: 0
+    host: 123.57.58.141
+    password: Zkbr1234
+    port: 6379
+    timeout: 60000
+    pool:
+      max-active: 10
+      max-idle: 10
+      max-wait: 60000
+      min-idle: 5
+  thymeleaf: 
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: LEGACYHTML5
+    cache: false
+    encoding: UTF-8
+    content-type: text/html
+  cache:
+    type: guava  
+#日志
+logging:
+  #path: /usr/log
+  #file: common.log
+  level:
+    root: INFO
+    com.company.platform.base: INFO
+    com.company.platform.demo: INFO
+    com.company.platform.security: INFO
+    com.company.platform.home: INFO
+    com.company.platform.openRestApi: DEBUG
+    com.company.platform.restapi: DEBUG
+    
+#数据库连接
+master:
+  datasource:
+     #url: jdbc:mysql://rds13i3iv396h588bxbdo.mysql.rds.aliyuncs.com:3306/cashloan?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://rm-2ze9k3sxcw92di8rhco.mysql.rds.aliyuncs.com:3306/rbloan?useUnicode=true&characterEncoding=UTF-8
+    driverClassName: com.mysql.jdbc.Driver
+    initialSize: 3
+    minIdle: 1
+    maxActive: 5
+    maxWait: 20000
+    #username: loan
+    #password: Loan1234
+    username: root
+    password: 123456
+    timeBetweenEvictionRunsMillis: 360000
+    filters: stat,wall,log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT X
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    
+    
+#httpclient配置
+httpclient: 
+  config: 
+    #代理的host
+    proxyhost: 123.57.58.141
+    #代理端口
+    proxyPort: 8888
+    #连接超时或异常重试次数  
+    retryTime: 3  
+    #长连接保持时间，单位为s  
+    keepAliveTime: 1  
+    #连接池最大连接数  
+    connMaxTotal: 20  
+    maxPerRoute: 20  
+    #连接超时时间，单位ms  
+    connectTimeout: 2000  
+    #请求超时时间  
+    connectRequestTimeout: 2000  
+    #sock超时时间  
+    socketTimeout: 2000  
+    #连接存活时间，单位s  
+    timeToLive: 60

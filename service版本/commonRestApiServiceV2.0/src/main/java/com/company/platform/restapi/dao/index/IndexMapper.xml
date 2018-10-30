@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.index.IndexMapper">
+
+<select id="getIndexProductList"
+        resultType="com.company.platform.restapi.model.basicdata.ProductInfo"
+		parameterType="java.lang.String">
+		SELECT p.* FROM loan_product p JOIN org_product_relation o ON o.orgId=#{orgId} AND p.id=o.loanProductId AND p.status=1
+	</select>
+	
+</mapper>

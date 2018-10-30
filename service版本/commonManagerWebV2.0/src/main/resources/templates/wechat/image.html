@@ -1,0 +1,264 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">     
+<meta content="black" name="apple-mobile-web-app-status-bar-style">     
+<meta content="telephone=no" name="format-detection">
+<title>影像信息</title>
+<link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"></link>
+</head>
+
+<body>
+<div id="error"></div>
+<div class="pop" id="alertDiv" style="display:none">
+		<div class="popbox">
+			<div class="pop-txt">
+				<span id="alertTxt"></span>
+			</div>
+			<div class="btn">
+				<a href="JavaScript:void(0);" onclick="$('#alertDiv').css('display','none')" style="width:100%">确定</a>
+			</div>
+		</div>
+		<div class="popbg"></div>
+	</div>
+
+<input type="hidden" id="loanProductApplyId"  th:value="${loanProductApplyId} "/>
+	<div class="main main-2"  id="model">
+		<a href="#" class="btn-back"><img src="../img/back.png" alt="" onclick="goMain()"></a>
+	</div>
+	<div class="actionbar">
+		<a id="uploandImage" href="#" class="button">上  传</a>
+	</div>
+	<div class="pop" id="loading" >
+		<div class="popbox">
+			<div class="loading"><img src="../img/loading.gif" alt=""><span>处理中</span></div>
+		</div>
+		<div class="popbg"></div>
+	</div>
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<script th:src="@{/js/jquery.cookie.js}"></script>
+	<script th:src="@{/js/global.js}"></script>
+	<script th:src="@{/js/json.js}"></script>	
+	<script th:src="@{/js/uuid.js}"></script>
+<script th:src="@{/js/weixin.js}"></script>
+<script th:src="@{/js/redirect.js}"></script>
+	<script>
+	var loanProductApplyId=$("#loanProductApplyId").val();
+	var openId = $.cookie('openId');
+	var htmlFlag = 0;
+	var status = 0;
+	htmlFlag = getUrlParms('htmlFlag');
+	status = getUrlParms('status');
+	var timeOutNum=0;
+	var message = "";
+    var param={};
+	$(function(){
+		
+		//图片删除按钮
+		var delete_btn = function(){
+			var id = $(this).attr("id");
+			var modelId = $(this).parent().parent().attr("modelId");
+			var classId = $(this).parent().parent().attr("classId");
+		    var delA=$(this);
+			console.log(id+"|"+modelId+"|"+classId);
+			$.zkbr.ajax({
+			    url: "../wechat/deleteLoanMaterial",
+	 		  	type:"post",
+	 		  	dataType:"json",
+	 			data:{"openId":openId,"loanProductApplyId":loanProductApplyId,"classId":classId,"id":id},
+	 			success:function(data){
+	 				if(data.exceptionFlag=="0000"&&data.responseCode=="00000000") 
+ 					{
+	 					 $("#alertDiv").show();
+	 					 $("#alertTxt").html("图片删除成功！");
+	 					console.log("影像模型删除成功!");
+	 					delA.parent().remove();
+	 				
+ 					}
+	 			}
+			});
+		}
+		//图片添加
+		var add_image = function(){
+			 var thisObj = $(this); 
+			 var modelId = thisObj.parent().parent().attr("modelId");
+			 var classId = thisObj.parent().parent().attr("classId");
+			 var id=thisObj.attr("id");
+
+			 var file = this.files[0];
+			 var reader = new FileReader();
+		         reader.readAsDataURL(file);
+		         reader.onload = function(e) { 
+		        	//设置modelID classId dataId
+		        	thisObj.hide();
+		        	thisObj.next().remove();
+		        	var div="";
+					div="<a href='JavaScript:void(0);' class='delete' id='"+id+"'><img src='../img/delete.png' alt=''></a>";
+					div = $(div);
+					//绑定图片删除事件
+					div.click(delete_btn);
+					thisObj.parent().append(div);
+					var img="<img src='"+reader.result+"' alt=''>";
+					thisObj.parent().append(img);
+					//构建新的上传input
+					var inputFile ="";
+					var uuidId = new UUID();
+					inputFile+="<div class='list' style='height: 110px;'>";
+					inputFile+="<input type='file' id='"+uuidId+"' name='"+uuidId+"'  accept='image/*'>";
+					inputFile+="<a href='JavaScript:void(0);' class='upload-btn'><img src='../img/upload.png' alt=''></a>";
+					inputFile+="</div>";
+					inputFile = $(inputFile);
+					inputFile.find("input").change(add_image);
+					thisObj.parent().parent().append(inputFile);
+		         }
+		     	
+		}
+
+		//初始化
+		$.zkbr.ajax({
+			    url: "../wechat/ios_getImageInfoList",
+	 		  	type:"post",
+	 		  	dataType:"json",
+	 			data:{"openId":openId,"loanProductApplyId":loanProductApplyId},
+	 			success:function(data){
+	 				if(data.exceptionFlag=="0000"&&data.responseCode=="00000000"){
+	 					var modelclass = data.resultSet.data;
+	 					var modelId =data.resultSet.modelId;
+	 					var model = $("#model");
+	 					if(modelclass.length>0){
+	 						//分类
+	 						$.each(modelclass,function(i,v){
+	 							var div =$("<div class='box'><h5>"+v.className+"</h5></div>");
+	 							var childDiv =$("<div class='boxcontent credentials cl_f' modelId='"+modelId+"' classId='"+v.classId+"'></div>");
+	 							$.each(v.data,function(i,img){
+	 								var image ="";
+	 								image+="<div class='list' style='height: 100px;'>";
+	 								image+="<a href='JavaScript:void(0);' class='delete'' id='"+img.id+"'><img src='../img/delete.png' alt=''></a>";
+	 								image+="<img src='"+img.url+"' alt=''>";
+	 								image+="</div>";
+	 								image = $(image);
+	 								image.find("a").click(delete_btn);
+	 								image.appendTo(childDiv);
+	 							})
+	 							var uuidId = new UUID();
+	 							//添加添加按钮
+								var inputFile ="";
+								inputFile+="<div class='list' style='height: 100px;'>";
+								inputFile+="<input type='file' id='"+uuidId+"' name='"+uuidId+"'  accept='image/*'>";
+								inputFile+="<a href='JavaScript:void(0);' class='upload-btn'><img src='../img/upload.png' alt=''></a>";
+								inputFile+="</div>";
+								inputFile = $(inputFile);
+								inputFile.find("input").change(add_image);
+								inputFile.appendTo(childDiv);
+	 							childDiv.appendTo(div);
+	 							div.appendTo(model);
+	 						})
+	 						
+	 						
+	 					}
+	 				}
+	 				$("#loading").hide();
+	 			}
+			
+		});
+		
+		//图片上传
+		$("#uploandImage").click(function(){
+			var uploandObj=[];
+			var commObj =[];
+			$(".box").each(function(i){
+				var box = $(this);
+				box.find("input").each(function(j){
+					var data = new FormData();
+					var input=$(this);
+					commObj.push(input.attr("id"));
+					data.append("openId",openId);
+					data.append("id",input.attr("id"));
+					data.append("loanProductApplyId",loanProductApplyId);
+					data.append("modelId",box.find(".cl_f").attr("modelid"));
+					data.append("classId",box.find(".cl_f").attr("classid"));
+					if($(this).val()!=""){
+						data.append("file",this.files[0]);
+						uploandObj.push(data);
+					}
+				})
+			});
+			//计数器
+		 timeOutNum = uploandObj.length;
+		 if(timeOutNum==0){
+			 $("#alertDiv").show();
+			 $("#alertTxt").html("请先选择图片！");
+			 return ;
+		 }
+		  $("#loading").show();
+		  $.each(uploandObj,function(i){
+			var param = this;
+			//文件上传
+			$.ajax({
+			    url: "../wechat/ios_uploadLoanMaterial",
+	 		  	type:"post",
+	 		  	dataType:"json",
+	 		  	processData: false, //不处理发送数据
+	 		    contentType: false,  //不设置请求头
+	 		  	data:param,
+	 			success:function(data){
+	 				if(data.exceptionFlag=="0000"){
+	 					//移除当前inpout对象
+	 					$("input[name='"+commObj[i]+"']").remove();
+	 					timeOutNum--;
+	 					message = "图片上传成功！";
+	 				}else{
+	 					timeOutNum=0;
+	 					message = "图片上传失败,请刷新重试";
+	 					$("#loading").hide();
+	 				}				 				
+	 			},error: function(e){
+
+	 				$("#error").html(e);
+
+	 				}
+			})
+		  })
+		var  it =setInterval(function(){
+			if(timeOutNum<=0){
+			   clearInterval(it);
+			   $("#loading").hide();
+			   $("#alertDiv").show();
+			   $("#alertTxt").html(message);
+			   
+			}
+		},50);
+		})
+	});
+	
+	function goMain(){
+		if(htmlFlag == 4 ) {
+			//window.location.href="../wechat/loan_apply?loanProductApplyId="+loanProductApplyId+"&openId="+openId+"&htmlFlag=4";
+            param = {loanProductApplyId:loanProductApplyId,openId:openId,htmlFlag:4,method:'loan_apply'};
+            redirect(param);
+		}else if(htmlFlag == 0){
+            //window.location.href="../wechat/loan_apply?loanProductApplyId="+loanProductApplyId+"&openId="+openId+"&htmlFlag=0";
+            param = {loanProductApplyId:loanProductApplyId,openId:openId,htmlFlag:0,method:'loan_apply'};
+            redirect(param);
+		} else {
+			//window.location.href="../wechat/manual_check?loanProductApplyId="+loanProductApplyId+"&openId="+openId+"&status=2";
+            param = {loanProductApplyId:loanProductApplyId,openId:openId,status:2,method:'manual_check'};
+            redirect(param);
+		}
+	}
+	
+	function getUrlParms(name){
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null){
+			return unescape(r[2]);
+		}
+		return null;
+	}
+	</script>
+	
+</body>
+</html>

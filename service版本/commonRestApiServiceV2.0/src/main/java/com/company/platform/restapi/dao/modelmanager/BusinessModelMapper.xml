@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.modelmanager.BusinessModelMapper">
+	<select id="getBusinessModelsByProductId" resultType="com.company.platform.restapi.model.modelmanager.BusInfoModel"
+		parameterType="java.lang.String">
+	select mb.id, mb.`name` modelName, lpm.loanProductId productId from
+	loan_product_model_v lpm, v_model_business mb where lpm.modelCode =
+	mb.`code` and lpm.modelVersion = mb.version and lpm.modelType = 'BUM'
+	and lpm.loanProductId = #{productId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getBusinessTitlesByProductId" resultType="com.company.platform.restapi.model.modelmanager.BusTitleInfoModel"
+		parameterType="java.lang.String">
+	select mt.id, mt.`name`, mt.sort, mb.id modelId from loan_product_model_v lpm, v_model_business mb, v_model_title mt where lpm.modelCode = mb.`code` and lpm.modelVersion = mb.version and lpm.modelType = 'BUM' and mb.id = mt.modelId and lpm.loanProductId = #{productId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getBusinessColumnsByProductId" resultType="com.company.platform.restapi.model.modelmanager.BusColumnInfoModel"
+		parameterType="java.lang.String">
+	select mc.id, mt.`code`, mc.`name`, mc.inputType, mc.necessity, mc.defValue, mc.dataType, mc.length, mc.sort, mc.titleId from loan_product_model_v lpm, v_model_business mb, v_model_title mt, v_model_column mc where lpm.modelCode = mb.`code` and lpm.modelVersion = mb.version and lpm.modelType = 'BUM' and mb.id = mt.modelId and mt.id = mc.titleId and lpm.loanProductId = #{productId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getModelBusTitleInfo" resultType="com.company.platform.restapi.model.modelmanager.ModelBusTitleInfo"
+		parameterType="java.lang.String">
+	select mt.id titleId, mt.`name`,  mb.id modelId from loan_product_model_v lpm, v_model_business mb, v_model_title mt where lpm.modelCode = mb.`code` and lpm.modelVersion = mb.version and lpm.modelType = 'BUM' and mb.id = mt.modelId and lpm.loanProductId = #{productId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getModelBusDataInfo" resultType="com.company.platform.restapi.model.modelmanager.ModelBusDataInfo"
+		parameterType="java.lang.String">
+		SELECT
+		mbd.id,
+		mbd.inputType,
+		mbd.busCode,
+		mbd.busVal,
+		DATE_FORMAT(
+		mbd.updateTime,
+		'%Y-%m-%d %H:%i:%s'
+		) updateTime
+	FROM
+		v_model_business_record mbr,
+		v_model_business_data mbd
+	WHERE
+		mbr.id = mbd.recordId
+	AND mbr.businessId = #{loanProductApplyId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getBusRecordByBusId" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		select `id`, `createDate`, `functionExplain`, `busmodId`, `businessId` from v_model_business_record where businessId = #{loanProductApplyId, jdbcType=VARCHAR} limit 0, 1
+	</select>
+	
+	<select id="getBusModelById" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		select `id`, `code`, `name`, `version`, `mdesc` from v_model_business where id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="emptyModelData" parameterType="java.lang.String">
+		update
+			v_model_business_data
+		set
+			busVal = null,
+			updateTime = now()
+		where
+			recordId = #{recordId, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getProductModelByProductId" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		select `modelCode`, `modelVersion` from loan_product_model_v where loanProductId = #{loanProductId, jdbcType=VARCHAR} and modelType=#{modelType, jdbcType=VARCHAR} limit 0, 1
+	</select>
+	
+	<select id="getProductModelV" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		select `id` from v_model_business where code = #{modelCode, jdbcType=VARCHAR} and version=#{modelVersion, jdbcType=VARCHAR} limit 0, 1
+	</select>
+	
+	<select id="getProductModelByModelId" resultType="com.company.platform.restapi.model.modelmanager.BusTitleModelInfo"
+		parameterType="java.lang.String">
+	select id, `code`, `name`, `sort`, `modelId` from v_model_title where modelId = #{modelId, jdbcType=VARCHAR} ORDER BY sort
+	</select>
+	
+	<select id="getProductModelBytitleId" resultType="com.company.platform.restapi.model.modelmanager.BusColumnInfoModel"
+		parameterType="java.lang.String">
+	select id, `code`, `name`, inputType, necessity, defValue, dataType, length, validation, validationMsg, sort, titleId from v_model_column where titleId = #{titleId, jdbcType=VARCHAR} ORDER BY sort
+	</select>
+	
+	<select id="getDataRangItemByRangeCode" resultType="com.company.platform.restapi.model.basicdata.DicInfo"
+		parameterType="java.lang.String">
+		SELECT
+			code, name, rangeCode, updateTime as dicInfoUpdateTime
+		FROM
+			data_range_item
+		WHERE
+			rangeCode = #{rangeCode, jdbcType=VARCHAR}
+		ORDER BY
+			rangeCode, sort	
+	</select>
+	
+</mapper> 

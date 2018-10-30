@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.ProductApplyInfoMapper">
+	<delete id="delProductApplyInfo" parameterType="java.lang.String"> 
+		DELETE
+		FROM
+			loan_product_apply
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</delete>
+	
+	<update id="modifyLoanProductApply"  parameterType="com.company.platform.restapi.model.loan.onlineTemp.LoanProductApplyInfo">
+		UPDATE 
+			loan_product_apply 
+		SET 
+			applyAmount=#{applyAmount, jdbcType=VARCHAR},
+			termCount=#{termCount, jdbcType=VARCHAR},
+			termUnit=#{termUnit, jdbcType=VARCHAR},
+			repayTermCount=#{repayTermCount, jdbcType=VARCHAR},
+			repayTermUnit=#{repayTermUnit, jdbcType=VARCHAR},
+			repayType=#{repayType, jdbcType=VARCHAR},
+			interestRate=#{interestRate, jdbcType=VARCHAR},
+			penaltyRate=#{penaltyRate, jdbcType=VARCHAR},
+			guaranteeType=#{guaranteeType, jdbcType=VARCHAR},
+			useType=#{useType, jdbcType=VARCHAR},
+			intoPieceType=#{intoPieceType, jdbcType=VARCHAR},
+			ownContract=#{ownContract, jdbcType=VARCHAR},
+			loanAccount=#{loanAccount, jdbcType=VARCHAR},
+			loanCardNo=#{loanCardNo, jdbcType=VARCHAR},
+			loanBank=#{loanBank, jdbcType=VARCHAR},
+			loanOrg=#{loanOrg, jdbcType=VARCHAR},
+			repaymentAccount=#{repaymentAccount, jdbcType=VARCHAR},
+			repaymentCardNo=#{repaymentCardNo, jdbcType=VARCHAR},
+			repaymentBank=#{repaymentBank, jdbcType=VARCHAR},
+			repaymentOrg=#{repaymentOrg, jdbcType=VARCHAR},
+			supplementMsg=#{supplementMsg, jdbcType=VARCHAR},
+			merchantId=#{merchantId, jdbcType=VARCHAR},
+			merchantChargeType=#{merchantChargeType, jdbcType=VARCHAR},
+			merchantChargeRate=#{merchantChargeRate, jdbcType=VARCHAR},
+			merchantChargeAmount=#{merchantChargeAmount, jdbcType=VARCHAR},
+			updateTime = #{updateTime, jdbcType=VARCHAR},
+			monthlyPayments = #{monthlyPayments, jdbcType=VARCHAR}
+		WHERE 
+			id=#{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="selectLoanProductApplyById" resultType="com.company.platform.restapi.model.loan.ProductApplyInfoResp" 
+		parameterType="java.lang.String"> 
+		
+		SELECT 
+			id,
+			loanProductId
+		FROM		
+			loan_product_apply
+		WHERE 
+			id = #{id, jdbcType=VARCHAR}
+			
+	</select>
+	
+	<select id="getLoanProductApplyById" resultType="com.company.platform.restapi.model.loan.FullLoanProductApplyInfo" 
+		parameterType="java.lang.String"> 
+		
+		SELECT 
+			id,
+			loanProductId,
+			customerId,
+			code,
+			applyAmount,
+			replyAmount,
+			termCount,
+			termUnit,
+			authTermCount,
+			authTermUnit,
+			repayTermCount,
+			repayTermUnit,
+			repayType,
+			applyTime,
+			interestRate,
+			penaltyRate,
+			guaranteeType,
+			useType,
+			intoPieceType,
+			productType,
+			ownContract,
+			status,
+			actionStatus,
+			accountManagerId,
+			registerId,
+			registerTime,
+			intoPieceNo,
+			loanAccount,
+			loanCardNo,
+			loanBank,
+			loanOrg,
+			repaymentAccount,
+			repaymentCardNo,
+			repaymentBank,
+			repaymentOrg,
+			commitTime,
+			supplementMsg,
+			procdefId,
+			orgId,
+			releaseType,
+			releaseDate,
+			taskType,
+			merchantState,
+			merchantId,
+			merchantChargeType,
+			merchantChargeRate,
+			merchantChargeAmount,
+			replyMerchantChargeRate,
+			replyMerchantChargeAmount,
+			otherChannels,
+			callRecordOrderId,
+			updateTime,
+			downPaymentsAmount
+		FROM		
+			loan_product_apply
+		WHERE 
+			id = #{id, jdbcType=VARCHAR}
+			
+	</select>
+	
+	<update id="updateLoanProductApplyInfo"  parameterType="com.company.platform.restapi.model.loan.FullLoanProductApplyInfo">
+		
+		UPDATE 
+			loan_product_apply 
+		SET 
+			applyAmount=#{applyAmount, jdbcType=VARCHAR},
+			termCount=#{termCount, jdbcType=VARCHAR},
+			termUnit=#{termUnit, jdbcType=VARCHAR},
+			repayTermCount=#{repayTermCount, jdbcType=VARCHAR},
+			repayTermUnit=#{repayTermUnit, jdbcType=VARCHAR},
+			interestRate=#{interestRate, jdbcType=VARCHAR},
+			penaltyRate=#{penaltyRate, jdbcType=VARCHAR},
+			guaranteeType=#{guaranteeType, jdbcType=VARCHAR},
+			useType=#{useType, jdbcType=VARCHAR},
+			intoPieceType=#{intoPieceType, jdbcType=VARCHAR},
+			status=#{status, jdbcType=VARCHAR},
+			loanAccount=#{loanAccount, jdbcType=VARCHAR},
+			loanCardNo=#{loanCardNo, jdbcType=VARCHAR},
+			loanBank=#{loanBank, jdbcType=VARCHAR},
+			loanOrg=#{loanOrg, jdbcType=VARCHAR},
+			repaymentAccount=#{repaymentAccount, jdbcType=VARCHAR},
+			repaymentCardNo=#{repaymentCardNo, jdbcType=VARCHAR},
+			repaymentBank=#{repaymentBank, jdbcType=VARCHAR},
+			repaymentOrg=#{repaymentOrg, jdbcType=VARCHAR},
+			commitTime=#{commitTime, jdbcType=VARCHAR},
+			supplementMsg=#{supplementMsg, jdbcType=VARCHAR},
+			procdefId=#{procdefId, jdbcType=VARCHAR},
+			repayType=#{repayType, jdbcType=VARCHAR},
+			actionStatus=#{actionStatus, jdbcType=VARCHAR},
+			replyAmount=#{replyAmount, jdbcType=VARCHAR},
+			ownContract=#{ownContract, jdbcType=VARCHAR},
+			authTermCount=#{authTermCount, jdbcType=VARCHAR},
+			authTermUnit=#{authTermUnit, jdbcType=VARCHAR},
+			taskType=#{taskType, jdbcType=VARCHAR},
+			merchantId=#{merchantId, jdbcType=VARCHAR},
+			merchantChargeType=#{merchantChargeType, jdbcType=VARCHAR},
+			merchantChargeRate=#{merchantChargeRate, jdbcType=VARCHAR},
+			merchantChargeAmount=#{merchantChargeAmount, jdbcType=VARCHAR},
+			replyMerchantChargeRate=#{replyMerchantChargeRate, jdbcType=VARCHAR},
+			replyMerchantChargeAmount=#{replyMerchantChargeAmount, jdbcType=VARCHAR},
+			updateTime = #{updateTime, jdbcType=VARCHAR},
+			downPaymentsAmount = #{downPaymentsAmount, jdbcType=VARCHAR}
+		WHERE 
+			id=#{id, jdbcType=VARCHAR}
+	
+	</update>
+	
+	<select id="getLoanProductModelVInfo" resultType="com.company.platform.restapi.model.loan.LoanProductModelV"
+		parameterType="java.lang.String" >
+		
+		SELECT 
+			id,
+			loanProductId,
+			modelType,
+			modelCode,
+			modelVersion
+		FROM		
+			loan_product_model_v
+		WHERE 
+			loanProductId = #{loanProductId, jdbcType=VARCHAR}
+		AND
+			modelType = #{modelType, jdbcType=VARCHAR}
+	
+	</select>
+	
+	<select id="getLoanProductApplyModelVInfo" resultType="com.company.platform.restapi.model.loan.LoanProductApplyModelV" 
+		parameterType="java.lang.String" >
+		
+		SELECT 
+			amv.id,
+			amv.loanProductApplyId,
+			amv.modelType,
+			amv.modelCode,
+			amv.modelVersion,
+			amv.cserviceId,
+			amv.modelInstanceId
+		FROM 
+			loan_product_apply_model_v amv, 
+			loan_product_model_v pmv 
+		WHERE 
+			amv.modelCode = pmv.modelCode 
+		AND 
+			amv.modelVersion = pmv.modelVersion 
+		AND 
+			amv.loanProductApplyId=#{loanProductId,jdbcType=VARCHAR} 
+		AND 
+			amv.modelType=#{modelType,jdbcType=VARCHAR}
+	
+	</select>
+
+	<insert id="insertOffLineLoanProductApply" parameterType="com.company.platform.restapi.model.loan.offToOnline.LoanProductApplyEntity"> 
+		INSERT INTO 
+			loan_product_apply
+		(
+			id,
+			loanProductId,
+			customerId,
+			code,
+			applyAmount,
+			termCount,
+			termUnit,
+			repayTermCount,
+			repayTermUnit,
+			repayType,
+			applyTime,
+			interestRate,
+			penaltyRate,
+			guaranteeType,
+			useType,
+			intoPieceType,
+			ownContract,
+			status,
+			actionStatus,
+			accountManagerId,
+			registerId,
+			registerTime,
+			intoPieceNo,
+			orgId,
+			loanAccount,
+			loanCardNo,
+			loanBank,
+			loanOrg,
+			repaymentAccount,
+			repaymentCardNo,
+			repaymentBank,
+			repaymentOrg,
+			supplementMsg,
+			merchantState,
+			merchantId,
+			merchantChargeType,
+			merchantChargeRate,
+			merchantChargeAmount,
+			replyMerchantChargeRate,
+			replyMerchantChargeAmount,
+			updateTime,
+			downPaymentsAmount
+		) 
+		VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{loanProductId, jdbcType=VARCHAR},
+			#{customerId, jdbcType=VARCHAR},
+			#{code, jdbcType=VARCHAR},
+			#{applyAmount, jdbcType=VARCHAR},
+			#{termCount, jdbcType=VARCHAR},
+			#{termUnit, jdbcType=VARCHAR},
+			#{repayTermCount, jdbcType=VARCHAR},
+			#{repayTermUnit, jdbcType=VARCHAR},
+			#{repayType, jdbcType=VARCHAR},
+			#{applyTime, jdbcType=TIMESTAMP},
+			#{interestRate, jdbcType=VARCHAR},
+			#{penaltyRate, jdbcType=VARCHAR},
+			#{guaranteeType, jdbcType=VARCHAR},
+			#{useType, jdbcType=VARCHAR},
+			#{intoPieceType, jdbcType=VARCHAR},
+			#{ownContract, jdbcType=VARCHAR},
+			0,
+			0,
+			#{accountManagerId, jdbcType=VARCHAR},
+			#{registerId, jdbcType=VARCHAR},
+			#{registerTime, jdbcType=TIMESTAMP},
+			#{code, jdbcType=VARCHAR},
+			#{orgId, jdbcType=VARCHAR},
+			#{loanAccount, jdbcType=VARCHAR},
+			#{loanCardNo, jdbcType=VARCHAR},
+			#{loanBank, jdbcType=VARCHAR},
+			#{loanOrg, jdbcType=VARCHAR},
+			#{repaymentAccount, jdbcType=VARCHAR},
+			#{repaymentCardNo, jdbcType=VARCHAR},
+			#{repaymentBank, jdbcType=VARCHAR},
+			#{repaymentOrg, jdbcType=VARCHAR},
+			#{supplementMsg, jdbcType=VARCHAR},
+			0,
+			#{merchantId, jdbcType=VARCHAR},
+			#{merchantChargeType, jdbcType=VARCHAR},
+			#{merchantChargeRate, jdbcType=VARCHAR},
+			#{merchantChargeAmount, jdbcType=VARCHAR},
+			#{replyMerchantChargeRate, jdbcType=VARCHAR},
+			#{replyMerchantChargeAmount, jdbcType=VARCHAR},
+			#{updateTime, jdbcType=TIMESTAMP},
+			#{downPaymentsAmount, jdbcType=TIMESTAMP}
+		)
+		
+	</insert>
+	
+	<select id="selectBusModelRecord" resultType="java.util.Map"
+		parameterType="java.lang.String" >
+		SELECT 
+			id,
+			createDate,
+			functionExplain,
+			busmodId,
+			businessId
+		FROM		
+			v_model_business_record
+		WHERE 
+			businessId = #{businessId, jdbcType=VARCHAR}	
+	</select>
+	
+	<insert id="saveLoanApplyModelS">
+		INSERT INTO `loan_product_apply_model_v` (`id`, `loanProductApplyId`, `modelType`, `modelCode`, `modelVersion`, `modelInstanceId`) VALUES (UUID(), #{loanProductApplyId}, #{modelType}, #{modelCode}, #{modelVersion}, #{modelInstanceId});
+	</insert>
+	
+	<insert id="saveImgModelRecord" parameterType="java.lang.String">
+	
+		INSERT INTO 
+			v_model_material_record
+		(
+			id, 
+			businessId, 
+			modelId, 
+			createDate, 
+			functionExplain
+		) 
+		values
+		(
+			#{id, jdbcType=VARCHAR}, 
+			#{loanApplyId, jdbcType=VARCHAR}, 
+			#{imgModelId, jdbcType=VARCHAR}, 
+			#{createDate, jdbcType=TIMESTAMP}, 
+			#{functionExplain, jdbcType=VARCHAR}
+		)
+	
+	</insert>
+	
+	<select id="getImgModelById" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		select `id`, `code`, `name`, `expl`, `version` from v_model_image_document where id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="modifyUpdateTime">
+		update loan_product_apply set updateTime = SYSDATE() where id = #{id}
+	</update>
+	
+	<update id="updateLoanProductApplyTimeById" parameterType="java.lang.String">
+		update
+			loan_product_apply
+		set
+			updateTime = now()
+		where
+			id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateLoanApplyStatus" parameterType="java.lang.String">
+		update
+			loan_product_apply
+		set
+			status = #{status,jdbcType=VARCHAR},
+			updateTime = now()
+		where
+			id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

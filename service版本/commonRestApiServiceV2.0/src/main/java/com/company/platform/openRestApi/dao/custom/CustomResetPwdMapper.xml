@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.openRestApi.dao.custom.CustomResetPwdMapper">
+	<parameterMap type="java.util.HashMap" id="paraMap" />
+	
+	<update id="updateUserPwd" parameterMap="paraMap">
+		UPDATE sysuser SET
+			password = #{password,jdbcType=VARCHAR}
+		WHERE username = #{username,jdbcType=VARCHAR}
+	</update>	
+
+</mapper>

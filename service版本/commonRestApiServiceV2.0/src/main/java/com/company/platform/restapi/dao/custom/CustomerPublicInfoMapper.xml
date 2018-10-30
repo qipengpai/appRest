@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.custom.CustomerPublicInfoMapper">
+	
+	<select id="selectByPrimaryKey" resultType="com.company.platform.restapi.model.custom.CustomerPublicInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			customerNo,
+			customerName,
+			credentialType,
+			credentialNo,
+			eType,
+			workType,
+			orgId,
+			eStatus,
+			deleteStatus,
+			isBlackList,
+			isRisk,
+			createTime,
+			createUserId,
+			isRestricted,
+			authority,
+			availableCredit,
+			usedCredit,
+			creditStatus,
+			cusManagerId,
+			authenticationStatus,
+			authenticationName,
+			authenticationNo,
+			noticeConfigure,
+			overDueType,
+			DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') updateTime,
+			mobilePhone
+		FROM
+			customer_public
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateCustomerIdRisk" parameterType="java.lang.String"> 
+		UPDATE
+			customer_suspected_risk 
+		SET 
+			customerId=#{Id, jdbcType=VARCHAR} 
+		WHERE 
+			eType=#{eType, jdbcType=VARCHAR} 
+		AND 
+			credentialType=#{credentialType, jdbcType=VARCHAR} 
+		AND 
+			credentialNo=#{credentialNo, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateByPrimaryKey" parameterType="com.company.platform.restapi.model.custom.CustomerPublicInfo"> 
+        UPDATE 
+        	customer_public
+        SET 
+        	customerNo = #{customerNo, jdbcType=VARCHAR},
+            customerName = #{customerName, jdbcType=VARCHAR},
+            credentialType = #{credentialType, jdbcType=VARCHAR},
+            credentialNo = #{credentialNo, jdbcType=VARCHAR},
+            eType = #{eType, jdbcType=VARCHAR},
+            workType = #{workType, jdbcType=VARCHAR},
+            orgId = #{orgId, jdbcType=VARCHAR},
+            eStatus = #{eStatus, jdbcType=VARCHAR},
+            deleteStatus = #{deleteStatus, jdbcType=BIT},
+            isBlackList = #{isBlackList, jdbcType=BIT},
+            createTime = #{createTime, jdbcType=TIMESTAMP},
+            createUserId = #{createUserId, jdbcType=VARCHAR},
+            isRestricted = #{isRestricted, jdbcType=BIT},
+            authority = #{authority, jdbcType=VARCHAR},
+            availableCredit = #{availableCredit, jdbcType=DECIMAL},
+            usedCredit = #{usedCredit, jdbcType=DECIMAL},
+            creditStatus = #{creditStatus, jdbcType=VARCHAR}
+        WHERE 
+        	id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertSelective" parameterType="com.company.platform.restapi.model.custom.CustomerPublicInfo"> 
+        INSERT INTO
+        	customer_public
+        (
+	        id,
+	        customerNo,
+	        customerName,
+	        credentialType,
+	        credentialNo,
+	        eType,
+	        workType,
+	        orgId,
+	        eStatus,
+	        deleteStatus,
+	        isBlackList,
+	        createTime,
+	        createUserId,
+	        isRestricted,
+	        authority,
+	        availableCredit,
+	        usedCredit,
+	        creditStatus,
+	        updateTime
+        )	
+        VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{customerNo, jdbcType=VARCHAR},
+			#{customerName, jdbcType=VARCHAR},
+			#{credentialType, jdbcType=VARCHAR},
+			#{credentialNo, jdbcType=VARCHAR},
+			#{eType, jdbcType=VARCHAR},
+			#{workType, jdbcType=VARCHAR},
+			#{orgId, jdbcType=VARCHAR},
+			#{eStatus, jdbcType=VARCHAR},
+			#{deleteStatus, jdbcType=BIT},
+			#{isBlackList, jdbcType=BIT},
+			#{createTime, jdbcType=TIMESTAMP},
+			#{createUserId, jdbcType=VARCHAR},
+			#{isRestricted, jdbcType=BIT},
+			#{authority, jdbcType=VARCHAR},
+			#{availableCredit, jdbcType=DECIMAL},
+			#{usedCredit, jdbcType=DECIMAL},
+			#{creditStatus, jdbcType=VARCHAR},
+			#{updateTime, jdbcType=TIMESTAMP}
+		)	
+
+	</insert>
+	
+	
+	
+	<select id="selectByIdCard" resultType="com.company.platform.restapi.model.custom.CustomerPublicInfo"
+		parameterType="java.lang.String">
+		SELECT
+			*
+		FROM
+			customer_public
+		WHERE
+			credentialNo = #{idCard}
+	</select>
+</mapper>

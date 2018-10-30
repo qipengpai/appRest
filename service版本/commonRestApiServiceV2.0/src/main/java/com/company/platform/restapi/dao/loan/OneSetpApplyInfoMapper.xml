@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.OneSetpApplyInfoMapper">
+	<insert id="insertProductApplyInfo" parameterType="com.company.platform.restapi.model.loan.FullLoanProductApplyInfo"> 
+		INSERT INTO 
+			loan_product_apply 
+		(
+			id,
+			loanProductId,
+			customerId,
+			code,
+			applyAmount,
+			termCount,
+			termUnit,
+			repayTermCount,
+			repayTermUnit,
+			orgId,
+			status,
+			actionStatus,
+			accountManagerId,
+			registerId,
+			registerTime,
+			applyTime,
+			intoPieceNo,
+			merchantState,
+			downPaymentsAmount,
+			interestRate,
+			penaltyRate
+		) 
+		VALUES 
+		(
+			#{id,jdbcType=VARCHAR},
+			#{loanProductId,jdbcType=VARCHAR},
+			#{customerId,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			#{applyAmount,jdbcType=VARCHAR},
+			#{termCount,jdbcType=VARCHAR},
+			#{termUnit,jdbcType=VARCHAR},
+			#{repayTermCount,jdbcType=VARCHAR},
+			#{repayTermUnit,jdbcType=VARCHAR},
+			#{orgId,jdbcType=VARCHAR},
+			#{status,jdbcType=VARCHAR},
+			#{actionStatus,jdbcType=VARCHAR},
+			#{accountManagerId,jdbcType=VARCHAR},
+			#{registerId,jdbcType=VARCHAR},
+			#{registerTime,jdbcType=VARCHAR},
+			#{applyTime,jdbcType=VARCHAR},
+			#{code,jdbcType=VARCHAR},
+			0,
+			#{downPaymentsAmount,jdbcType=VARCHAR},
+			#{interestRate,jdbcType=VARCHAR},
+			#{penaltyRate,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="insertCustomerInfo" parameterType="com.company.platform.restapi.model.custom.CustomerPublicInfo"> 
+		INSERT INTO 
+			customer_public 
+		(
+			id,
+			customerNo,
+			orgId,
+			eType,
+			credentialType,
+			credentialNo,
+			customerName,
+			mobilePhone,
+			workType,
+			eStatus,
+			deleteStatus,
+			isBlackList,
+			createTime,
+			createUserId,
+			isRestricted,
+			authority,
+			usedCredit,
+			updateTime
+		) 
+		VALUES
+		(
+			#{id, jdbcType=VARCHAR},
+			#{customerNo, jdbcType=VARCHAR},
+			#{orgId, jdbcType=VARCHAR},
+			#{eType, jdbcType=VARCHAR},
+			#{credentialType, jdbcType=VARCHAR},
+			#{credentialNo, jdbcType=VARCHAR},
+			#{customerName, jdbcType=VARCHAR},
+			#{mobilePhone, jdbcType=VARCHAR},
+			#{workType, jdbcType=VARCHAR},
+			#{eStatus, jdbcType=VARCHAR},
+			#{deleteStatus, jdbcType=TINYINT},
+			#{isBlackList, jdbcType=TINYINT},
+			#{createTime, jdbcType=TIMESTAMP},
+			#{createUserId, jdbcType=VARCHAR},
+			#{isRestricted, jdbcType=VARCHAR},
+			#{authority, jdbcType=VARCHAR},
+			#{usedCredit, jdbcType=VARCHAR},
+			#{updateTime, jdbcType=VARCHAR}
+		)
+	</insert> 
+	
+	<insert id="insertPersonalCustomerInfo" parameterType="com.company.platform.restapi.model.custom.PersonalCustomerInfo"> 
+		INSERT INTO 
+			personal_customer_info 
+		(
+			id,
+			customerName,
+			credentialType,
+			credentialNo,
+			gender,
+			birthday
+		) 
+		VALUES
+		(
+			#{id, jdbcType=VARCHAR},
+			#{customerName, jdbcType=VARCHAR},
+			#{credentialType, jdbcType=VARCHAR},
+			#{credentialNo, jdbcType=VARCHAR},
+			#{gender, jdbcType=VARCHAR},
+			#{birthday, jdbcType=VARCHAR}
+
+		)
+	</insert> 
+	
+	<select id="getOneSetpApplyInfo" resultType="com.company.platform.restapi.model.loan.OneSetpApplyInfoResp"
+		parameterType="java.lang.String">
+		SELECT
+			lpa.id loanProductApplyId,
+			cu.eType,
+			cu.credentialType,
+			cu.credentialNo
+		FROM
+			loan_product_apply lpa
+		INNER JOIN 
+			customer_public cu 
+		ON 
+			lpa.customerId = cu.id
+		WHERE
+			lpa.id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+</mapper>

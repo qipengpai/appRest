@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.basicdata.BasicDataInfoMapper">
+	<parameterMap type="java.util.HashMap" id="paraMap" />
+	<!-- 获取登录人角色信息 -->
+	<select id="getRoleInfoByUserId"
+		resultType="com.company.platform.restapi.model.basicdata.RoleInfo"
+		parameterType="java.lang.String">
+		SELECT
+		a.id AS roleId,
+		a.roleCode AS roleCode,
+		a.roleName
+		AS roleName,
+		DATE_FORMAT(a.createTime,'%Y-%m-%d %H:%i:%s') roleInfoUpdateTime
+		FROM
+		sys_role a
+		LEFT JOIN
+		user_role_rel b
+		ON a.id = b.roleId
+		WHERE
+		b.userId = #{userId,
+		jdbcType=VARCHAR}
+	</select>
+
+
+	<!-- 获取登录人岗位信息 -->
+	<select id="getPosterInfoByUserId"
+		resultType="com.company.platform.restapi.model.basicdata.PosterInfo"
+		parameterType="java.lang.String">
+		SELECT
+		a.id AS posterId,
+		a.posterCode AS posterCode,
+		a.posterName AS posterName,
+		DATE_FORMAT(a.createTime,'%Y-%m-%d %H:%i:%s') posterInfoUpdateTime
+		FROM
+		sys_poster a
+		LEFT JOIN user_poster_rel b
+		ON a.id = b.posterId
+		WHERE
+		b.userId = #{userId, jdbcType=VARCHAR}
+	</select>
+
+
+
+	<!-- 获取登录人组织机构信息 -->
+	<select id="getOrgInfoByUserId"
+		resultType="com.company.platform.restapi.model.basicdata.OrgInfo"
+		parameterType="java.lang.String">
+		SELECT
+		a.id AS orgId,
+		a.orgCode AS orgCode,
+		a.orgName AS orgName,
+		a.eType AS orgType,
+		DATE_FORMAT(a.updateTime,'%Y-%m-%d %H:%i:%s') orgInfoUpdateTime
+		FROM
+		organization a
+		LEFT JOIN
+		user_dept_rel b
+		ON a.id = b.orgId
+		WHERE
+		b.userId = #{userId,
+		jdbcType=VARCHAR}
+	</select>
+
+
+
+	<!-- 获取数据字典父节点信息 -->
+	<select id="getDicRangeInfo"
+		resultType="com.company.platform.restapi.model.basicdata.DicRangeInfo"
+		parameterType="java.lang.String">
+		SELECT
+		rangeCode,
+		rangeName,
+		DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') dicRangeInfoUpdateTime
+		FROM
+		data_range where isUsed = '1'
+	</select>
+
+	<!-- 获取数据字典子节点信息 -->
+	<select id="getDicInfo"
+		resultType="com.company.platform.restapi.model.basicdata.DicInfo"
+		parameterType="java.lang.String">
+		SELECT
+		code,
+		name,
+		rangeCode,
+		DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') dicInfoUpdateTime
+		FROM
+		data_range_item where isUsed = '1'
+	</select>
+
+	<!-- 获取全局变量信息 -->
+	<select id="getConfigInfo"
+		resultType="com.company.platform.restapi.model.basicdata.ConfigInfo"
+		parameterType="java.lang.String">
+		SELECT
+		name,
+		displayName,
+		value,
+		DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') configInfoUpdateTime
+		FROM
+		global_config
+	</select>
+
+	<!-- 获取行政区划信息 -->
+	<select id="getCityInfo"
+		resultType="com.company.platform.restapi.model.basicdata.CityInfo"
+		parameterType="java.lang.String">
+		SELECT
+		provinceCode,
+		provinceName,
+		cityCode,
+		cityName,
+		countyCode,
+		countyName,
+		DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') cityInfoUpdateTime
+		FROM
+		province_city_code
+	</select>
+
+	<!-- 获取当前组织机构有权限的产品信息 -->
+	<select id="getProductInfo"
+		resultType="com.company.platform.restapi.model.basicdata.ProductInfo"
+		parameterType="java.lang.String">
+		SELECT
+		a.*,
+		DATE_FORMAT(a.updateTime,'%Y-%m-%d %H:%i:%s') productInfoUpdateTime
+		FROM
+		loan_product a
+		LEFT JOIN org_product_relation b ON a.id =
+		b.loanProductId
+		WHERE
+		b.orgId = #{orgId, jdbcType=VARCHAR};
+	</select>
+
+	<!-- 获取产品模型code和version -->
+	<select id="getBusModelCodeAndVersion"
+		resultType="com.company.platform.restapi.model.basicdata.ModelBusCodeAndVersion"
+		parameterType="java.util.HashMap">
+		SELECT
+		modelCode AS code,
+		modelVersion AS version
+		FROM
+		loan_product_model_v
+		WHERE
+		loanProductId = #{id, jdbcType=VARCHAR}
+		AND
+		modelType = #{modelType,
+		jdbcType=VARCHAR};
+	</select>
+
+	<!-- 通过code和version获取模型信息 -->
+	<select id="getModelBusInfo"
+		resultType="com.company.platform.restapi.model.basicdata.ModelBusInfo"
+		parameterType="java.util.HashMap">
+		SELECT
+		id,
+		name AS modelName
+		FROM
+		v_model_business
+		WHERE
+		code
+		= #{code, jdbcType=VARCHAR}
+		AND version = #{version,
+		jdbcType=VARCHAR};
+	</select>
+
+	<!-- 通过模型id获取模型分类信息 -->
+	<select id="getModelBusTitleInfo"
+		resultType="com.company.platform.restapi.model.basicdata.ModelBusTitleInfo"
+		parameterType="java.lang.String">
+		SELECT
+		id,
+		name,
+		sort
+		FROM
+		v_model_title
+		WHERE
+		modelId = #{id,
+		jdbcType=VARCHAR};
+	</select>
+
+	<!-- 通过模型分类id获取模型字段信息 -->
+	<select id="getModelBusColumnInfo"
+		resultType="com.company.platform.restapi.model.basicdata.ModelBusColumnInfo"
+		parameterType="java.lang.String">
+		SELECT
+		id,
+		name,
+		code,
+		inputType,
+		necessity,
+		defValue,
+		dataType,
+		length,
+		sort,
+		titleId
+		FROM
+		v_model_column
+		WHERE
+		titleId = #{id,
+		jdbcType=VARCHAR};
+	</select>
+
+	<!-- 通过code和version获取模型id -->
+	<select id="getModelImgId" resultType="java.lang.String"
+		parameterType="java.util.HashMap">
+		SELECT
+		id
+		FROM
+		v_model_image_document
+		WHERE
+		code = #{code,
+		jdbcType=VARCHAR}
+		AND version = #{version,
+		jdbcType=VARCHAR};
+	</select>
+
+	<!-- 通过模型id获取模型分类信息 -->
+	<select id="getModelImgInfo"
+		resultType="com.company.platform.restapi.model.basicdata.ModelImgInfo"
+		parameterType="java.lang.String">
+		SELECT
+		id AS titleId,
+		name AS titleName,
+		expl AS titleExpl,
+		sort AS titleSort,
+		imgDocId AS modelId,
+		floor,
+		size
+		FROM
+		v_model_img_doc_class
+		WHERE
+		imgDocId = #{modelImgId, jdbcType=VARCHAR};
+	</select>
+	
+	<!-- 获取所有业务模型信息 -->
+	<select id="getModelBusInfoProp"
+		resultType="com.company.platform.restapi.model.basicdata.ModelBusInfoProp"
+		parameterType="java.lang.String">
+		SELECT
+		id,
+		name AS modelName
+		FROM
+		v_model_business
+		
+	</select>
+
+	<!-- 获取所有业务模型分类信息 -->
+	<select id="getModelBusTitleInfoProp"
+		resultType="com.company.platform.restapi.model.basicdata.ModelBusTitleInfoProp"
+		parameterType="java.lang.String">
+		SELECT
+		id,
+		name,
+		sort,
+		modelId
+		FROM
+		v_model_title
+		
+	</select>
+
+	<!-- 获取所有模型字段信息 -->
+	<select id="getModelBusColumnInfoProp"
+		resultType="com.company.platform.restapi.model.basicdata.ModelBusColumnInfoProp"
+		parameterType="java.lang.String">
+		SELECT
+		id,
+		name,
+		code,
+		inputType,
+		necessity,
+		defValue,
+		dataType,
+		length,
+		sort,
+		titleId
+		FROM
+		v_model_column
+		
+	</select>
+	
+	<!-- 获取所有影像模型分类信息 -->
+	<select id="getModelImgInfoProp"
+		resultType="com.company.platform.restapi.model.basicdata.ModelImgInfoProp"
+		parameterType="java.lang.String">
+		SELECT
+		id AS titleId,
+		name AS titleName,
+		expl AS titleExpl,
+		sort AS titleSort,
+		imgDocId AS modelId,
+		floor,
+		size
+		FROM
+		v_model_img_doc_class
+	</select>
+
+	<!-- 通过当前登录人组织机构获取产品关联信息 -->
+	<select id="getOrgDeptInfo"
+		resultType="com.company.platform.restapi.model.basicdata.OrgDeptInfo"
+		parameterType="java.lang.String">
+		SELECT
+		id,
+		orgId,
+		loanProductId AS productId,
+		orgMinInterestRate,
+		orgMaxInterestRate,
+		interestRates,
+		defaultInterestRate,
+		orgMinPenaltyRate,
+		orgMaxPenaltyRate,
+		penaltyRates,
+		defaultPenaltyRate,
+		singleMinAmount,
+		singleMaxAmount,
+		singleAmounts,
+		defaultSingleAmount,
+		DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') orgDeptInfoUpdateTime
+		FROM
+		org_product_relation
+		WHERE
+		orgId = #{orgId, jdbcType=VARCHAR};
+	</select>
+
+	<!-- 获取当前组织机构有权限的产品信息 -->
+	<select id="getProcdefInfo"
+		resultType="com.company.platform.restapi.model.basicdata.ProcdefInfo"
+		parameterType="java.lang.String">
+		SELECT
+		a.id as productId,
+		DATE_FORMAT(a.updateTime,'%Y-%m-%d %H:%i:%s') procdefInfoUpdateTime,
+		a.procdefKey AS procdefKey
+		FROM
+		loan_product a
+		LEFT JOIN org_product_relation b ON a.id = b.loanProductId
+		WHERE
+		b.orgId = #{orgId, jdbcType=VARCHAR};
+	</select>
+
+	<!-- 获取当前组织机构有权限的产品信息 -->
+	<select id="getUserUpdateTimeInfoByUserId" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT
+		DATE_FORMAT(createTime,'%Y-%m-%d %H:%i:%s') userUpdateTime
+		FROM
+		sys_user
+		WHERE
+		id =
+		#{userId, jdbcType=VARCHAR};
+	</select>
+
+	<!-- 获取当前权限信息 -->
+	<select id="getJurisdictionInfoPro"
+		resultType="com.company.platform.restapi.model.basicdata.JurisdictionInfo"
+		parameterType="java.util.HashMap">
+		SELECT
+		authIds,
+		taskKey,
+		productId,
+		taskSort,
+		DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') jurisdictionInfoUpdateTime
+		FROM
+		act_taskset
+		WHERE
+		wfId = (
+		SELECT
+		MAX(wfId)
+		FROM
+		act_taskset
+		WHERE
+		productId = #{productId, jdbcType=VARCHAR}
+		)
+		AND
+		productId = #{productId, jdbcType=VARCHAR}
+		AND wfKey =
+		#{procdefKey,
+		jdbcType=VARCHAR}
+		ORDER BY taskSort ASC;
+	</select>
+
+</mapper>

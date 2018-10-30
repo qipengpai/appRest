@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.base.dao.requestAccess.RequestAccessMapper">
+	<parameterMap type="java.util.HashMap" id="paraMap" />
+	<insert id="addRequestAccessInfo" parameterMap="paraMap">
+		INSERT INTO requestAccessLog (
+			  id,
+			  modelName,
+			  modelType,
+			  logDesc,
+			  requestUrl,
+			  requestType,
+			  className,
+			  methodName,
+			  userName,
+			  userRealName,
+			  operTime,
+			  exeTime,
+			  requestIp,
+			  sessionId
+		) VALUES (
+			 #{id,jdbcType=VARCHAR},
+			 #{modelName,jdbcType=VARCHAR},
+			 #{modelType,jdbcType=VARCHAR},
+			 #{logDesc,jdbcType=VARCHAR},
+			 #{requestUrl,jdbcType=VARCHAR},
+			 #{requestType,jdbcType=VARCHAR},
+			 #{className,jdbcType=VARCHAR},
+			 #{methodName,jdbcType=VARCHAR},
+			 #{userName,jdbcType=VARCHAR},
+			 #{userRealName,jdbcType=VARCHAR},
+			 #{operTime,jdbcType=TIMESTAMP},
+			 #{exeTime,jdbcType=INTEGER},
+			 #{requestIp,jdbcType=VARCHAR},
+			 #{sessionId,jdbcType=VARCHAR})
+	</insert>
+</mapper>

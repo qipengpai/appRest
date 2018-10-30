@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.openRestApi.dao.custom.AppSystemMessageMapper">
+	<select id="getSystemMessage" resultType="com.company.platform.openRestApi.model.custom.AppSystemMessageModel"
+		parameterType="java.lang.String">
+		SELECT
+			id id,
+			messageType messageType,
+			messageTitle messageTitle,
+			eventUrl eventUrl,
+			messageContent messageContent,
+			date_format(sendDate,'%Y-%m-%d %H:%i:%s') sendDate
+		FROM
+			systemmessage 
+		WHERE
+			delete_status=0
+		ORDER BY 
+			sendDate DESC 
+	</select>
+</mapper>

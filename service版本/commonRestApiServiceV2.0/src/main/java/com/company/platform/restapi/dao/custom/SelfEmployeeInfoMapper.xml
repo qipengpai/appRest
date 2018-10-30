@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.custom.SelfEmployeeInfoMapper">
+	<insert id="insertSelfEmployeeInfo" parameterType="com.company.platform.restapi.model.custom.SelfEmployeeInfo"> 
+		INSERT INTO 
+			self_employee_info
+		(
+			id,
+			eType,
+			monthIncome,
+			enterpriseName,
+			turnover,
+			mainBusiness,
+			shareRadio
+		) 
+		VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{eType, jdbcType=VARCHAR},
+			#{monthIncome, jdbcType=VARCHAR},
+			#{enterpriseName, jdbcType=VARCHAR},
+			#{turnover, jdbcType=VARCHAR},
+			#{mainBusiness, jdbcType=VARCHAR},
+			#{shareRadio, jdbcType=VARCHAR}
+		)
+	</insert>
+</mapper>

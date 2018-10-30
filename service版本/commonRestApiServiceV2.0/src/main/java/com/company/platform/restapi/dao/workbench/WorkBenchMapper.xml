@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.workbench.WorkBenchMapper">
+	<parameterMap type="java.util.HashMap" id="paraMap" />
+
+	<!--获取借贷申请暂存任务数量 -->
+	<select id="getTemporaryCount" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		
+		SELECT
+		COUNT(DISTINCT apply.id) AS temporaryCount
+		FROM
+		loan_product_apply apply
+		JOIN
+		customer_public customer
+		ON
+		apply.registerId = #{registerId, jdbcType=VARCHAR}
+		AND
+		apply.status = 0
+		AND
+		apply.customerId = customer.id
+		JOIN
+		loan_product product
+		ON
+		apply.loanProductId = product.id
+	</select>
+
+	<!--获取借贷申请已办进件数量 -->
+	<select id="getWorkedCount" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		SELECT
+			count(lpa.id)
+		FROM
+			loan_product_apply lpa
+		INNER JOIN loan_product lp ON lpa.loanProductId = lp.id
+		INNER JOIN customer_public cp ON lpa.customerId = cp.id
+		INNER JOIN (select DISTINCT x.ID_, x.BUSINESS_KEY_, x.PROC_DEF_ID_ from act_hi_procinst x, act_hi_taskinst y where y.ASSIGNEE_ = #{registerId, jdbcType=VARCHAR} and y.end_time_ is not null and y.execution_id_ = x.ID_) at ON at.BUSINESS_KEY_ = lpa.id
+	</select>
+</mapper>

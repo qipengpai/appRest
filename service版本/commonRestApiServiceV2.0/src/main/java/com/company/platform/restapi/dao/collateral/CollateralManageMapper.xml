@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.collateral.CollateralManageMapper">
+	
+	<select id="getCollateralList" resultType="com.company.platform.restapi.model.collateral.CollateralInfo"
+		parameterType="java.lang.String">
+		select
+			cw.id,
+			cw.collateralNo,
+			cw.collateralName,
+			cw.collateralType,
+			cw.warrantType,
+			cw.esValue,
+			cw.collateralStatus,
+			date_format(cw.registerTime,'%Y-%m-%d') registerTime,
+			cw.esValueSys,
+			org.orgName as registerOrgName,
+			u.realName as registerUserName,
+			customer.customerName
+		from 
+			collateral_warrant_info cw
+		left join 
+			sys_user_info u
+		  on cw.registerStaffId = u.userId
+		left join
+			organization org
+		  on cw.registerOrgId = org.id
+		left join
+			customer_public customer
+		  on customer.id = cw.customerId
+		where 
+			cw.deleteStatus = 0 
+		<if test="list!=null">
+			and cw.registerOrgId in 
+			<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+	        	#{item}       
+	       	</foreach>
+		</if>
+		<if test="userId != null">
+			and cw.registerStaffId = #{userId, jdbcType=VARCHAR}
+		</if>
+		order by cw.registerTime desc 
+	</select>
+	
+	<select id="getCollateralWarrantInfoById" resultType="java.util.Map" parameterType="java.lang.String">
+		select
+			id,
+			collateralNo,
+			collateralName,
+			collateralType,
+			collateralDesc,
+			customerId,
+			warrantType,
+			warrantNo,
+			warrantName,
+			esValue,
+			collateralStatus,
+			registerStaffId,
+			registerOrgId,
+			registerTime,
+			isUsed,
+			deleteStatus,
+			esValueSys
+		from
+			collateral_warrant_info
+		where
+			id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getLoanCollateralRelByColId" resultType="java.util.Map" parameterType="java.lang.String">
+		select
+			id,
+			loanApplyId,
+			extensionApplyId,
+			collateralId,
+			eOrder,
+			effTime,
+			mortgageAmount,
+			warrantStatus,
+			esValue,
+			collateralClass
+		from
+			loan_collateral_rel
+		where
+			collateralId = #{collateralId, jdbcType=VARCHAR}
+		and warrantStatus != 3
+	</select>
+	
+	<update id="deleteCollateralInfoById" parameterType="java.lang.String">
+		update
+			collateral_warrant_info
+		set
+			deleteStatus = 1
+		where
+			id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getCustomerWarrantList" resultType="com.company.platform.restapi.model.collateral.CustomerWarrant"
+		parameterType="java.util.List">
+		select
+			c.id,
+			c.customerName,
+			org.orgName,
+			c.credentialNo,
+			CONCAT(c.customerName, '(', c.credentialNo, ')') customerDesc
+		from
+			customer_public c
+		left join
+			organization org
+		  on c.orgId = org.id
+		where
+			c.deleteStatus = 0 
+		<if test="list!=null">
+			and c.orgId in
+			<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+	        	#{item}       
+	       	</foreach>
+		</if>
+	</select>
+	
+	<select id="getTitleByTemplateId" resultType="java.lang.String" parameterType="java.lang.String">
+		select
+			title
+		from
+			form_template
+		where
+			id = #{id,jdbcType=VARCHAR} 
+	</select>
+	
+	<select id="getCollateralTemplateElementById" resultType="com.company.platform.restapi.model.collateral.TemplateElement"
+		parameterType="java.lang.String">
+		select
+			te.id,
+			te.displayName,
+			te.validateDesc,
+			te.eSort,
+			te.colCount,
+			te.cssId,
+			fe.eType as elementType,
+			fe.placeHolder,
+			fe.defaultValue,
+			fe.selectOption,
+			fe.dictType,
+			fe.eDesc
+		from
+			template_elements te
+		inner join
+			form_elements fe
+		   on te.elementId = fe.id
+		where
+			te.templateId = #{id,jdbcType=VARCHAR}
+		order by te.eSort asc
+	</select>
+	
+	<select id="getCollateralInfoById" resultType="com.company.platform.restapi.model.collateral.CollateralDetailResp"
+		parameterType="java.lang.String">
+		select
+			cw.id,
+			cw.collateralNo,
+			cw.collateralName,
+			cw.collateralType,
+			cw.collateralDesc,
+			cw.customerId,
+			cw.warrantType,
+			cw.warrantNo,
+			cw.warrantName,
+			cw.esValue,
+			cw.collateralStatus,
+			cw.esValueSys,
+			date_format(cw.registerTime,'%Y-%m-%d') registerTime,
+			CONCAT(cp.customerName, '(', cp.credentialNo, ')') customerDesc
+		from
+			collateral_warrant_info cw
+		left join customer_public cp
+		  on cp.id = cw.customerId
+		where
+			cw.deleteStatus = 0
+			and cw.id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getTemplateValueByCollateralId" resultType="com.company.platform.restapi.model.collateral.TemplateValue"
+		parameterType="java.lang.String">
+		SELECT
+			tv.elementId 'key',
+			tv.businessValue 'value'
+		FROM
+			template_value tv
+		WHERE
+			tv.businessId = #{collateralId,jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="insertCollateralWarrantInfo" parameterType="com.company.platform.restapi.model.collateral.CollateralWarrantInfo">
+		insert
+			collateral_warrant_info
+		(
+			id,
+			collateralNo,
+			collateralName,
+			collateralType,
+			collateralDesc,
+			customerId,
+			warrantType,
+			warrantNo,
+			warrantName,
+			esValue,
+			collateralStatus,
+			registerStaffId,
+			registerOrgId,
+			registerTime,
+			isUsed,
+			deleteStatus,
+			esValueSys
+		)
+		values
+		(
+			#{id, jdbcType=VARCHAR},
+			#{collateralNo, jdbcType=VARCHAR},
+			#{collateralName, jdbcType=VARCHAR},
+			#{collateralType, jdbcType=VARCHAR},
+			#{collateralDesc, jdbcType=VARCHAR},
+			#{customerId, jdbcType=VARCHAR},
+			#{warrantType, jdbcType=VARCHAR},
+			#{warrantNo, jdbcType=VARCHAR},
+			#{warrantName, jdbcType=VARCHAR},
+			#{esValue, jdbcType=VARCHAR},
+			#{collateralStatus, jdbcType=VARCHAR},
+			#{registerStaffId, jdbcType=VARCHAR},
+			#{registerOrgId, jdbcType=VARCHAR},
+			#{registerTime, jdbcType=VARCHAR},
+			#{isUsed, jdbcType=VARCHAR},
+			#{deleteStatus, jdbcType=VARCHAR},
+			#{esValueSys, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateCollateralWarrantInfo" parameterType="com.company.platform.restapi.model.collateral.CollateralWarrantInfo">
+		update
+			collateral_warrant_info
+		set
+			collateralNo = #{collateralNo, jdbcType=VARCHAR},
+			collateralName = #{collateralName, jdbcType=VARCHAR},
+			collateralType = #{collateralType, jdbcType=VARCHAR},
+			collateralDesc = #{collateralDesc, jdbcType=VARCHAR},
+			customerId = #{customerId, jdbcType=VARCHAR},
+			warrantType = #{warrantType, jdbcType=VARCHAR},
+			warrantNo = #{warrantNo, jdbcType=VARCHAR},
+			warrantName = #{warrantName, jdbcType=VARCHAR},
+			esValue = #{esValue, jdbcType=VARCHAR},
+			collateralStatus = #{collateralStatus, jdbcType=VARCHAR},
+			esValueSys = #{esValueSys, jdbcType=VARCHAR}
+		where
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteTemplateValueByCollateralId" parameterType="java.lang.String"> 
+		DELETE
+		FROM
+			template_value
+		WHERE
+			businessId = #{collateralId, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertTemplateValue" parameterType="java.lang.String"> 
+		INSERT INTO 
+			template_value 
+		(
+			businessId,
+			elementId,
+			businessValue
+		) 
+		VALUES 
+		(
+			#{collateralId, jdbcType=VARCHAR},
+			#{key, jdbcType=VARCHAR},
+			#{value, jdbcType=VARCHAR}
+		)
+	</insert>
+</mapper>

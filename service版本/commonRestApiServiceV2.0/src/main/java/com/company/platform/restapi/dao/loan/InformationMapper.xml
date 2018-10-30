@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.InformationMapper">
+
+	<select id="getOrgInfoByPrimaryKey" resultType="java.util.Map"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			company_name,
+			code_type,
+			service_type,
+			company_tel,
+			company_email,
+			corporation_name,
+			corporation_tel,
+			corporation_idCard,
+			organization_name,
+			organization_code,
+			term_validity,
+			address_province,
+			address_city,
+			address_area,
+			address_detailed,
+			registration_number,
+			registered_capital,
+			registration_date,
+			operating_validity,
+			business_scope,
+			account_status,
+			created_at,
+			created_by,
+			updated_by,
+			updated_at,
+			channel_manager
+		FROM
+			merchant_information
+		WHERE
+			organization_code = #{orgId, jdbcType=VARCHAR}
+	</select>
+
+</mapper>

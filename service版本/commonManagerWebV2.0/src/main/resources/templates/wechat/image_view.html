@@ -1,0 +1,105 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">     
+<meta content="black" name="apple-mobile-web-app-status-bar-style">     
+<meta content="telephone=no" name="format-detection">
+<title>影像信息</title>
+<link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"></link>
+</head>
+
+<body>
+<input type="hidden" id="loanProductApplyId"  th:value="${loanProductApplyId} "/>
+	<div class="main main-2"  id="model">
+		<a href="#" class="btn-back"><img src="../img/back.png" alt="" onclick="goMain()"></a>
+	</div>
+
+	<div class="pop" id="loading" >
+		<div class="popbox">
+			<div class="loading"><img src="../img/loading.gif" alt=""><span>加载中</span></div>
+		</div>
+		<div class="popbg"></div>
+	</div>
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<script th:src="@{/js/jquery.cookie.js}"></script>
+	<script th:src="@{/js/global.js}"></script>
+	<script th:src="@{/js/json.js}"></script>	
+	<script th:src="@{/js/uuid.js}"></script>
+<script th:src="@{/js/weixin.js}"></script>
+<script th:src="@{/js/redirect.js}"></script>
+	<script>
+	var loanProductApplyId=$("#loanProductApplyId").val();
+	var openId = $.cookie('openId');
+	var status = 0;
+	status = getUrlParms('status');
+    var param={};
+	$(function(){
+		//初始化
+		$.zkbr.ajax({
+			    url: "../wechat/ios_getImageInfoList",
+	 		  	type:"post",
+	 		  	dataType:"json",
+	 			data:{"openId":openId,"loanProductApplyId":loanProductApplyId},
+	 			success:function(data){
+	 				if(data.exceptionFlag=="0000"&&data.responseCode=="00000000"){
+	 					var modelclass = data.resultSet.data;
+	 					var modelId =data.resultSet.modelId;
+	 					var model = $("#model");
+	 					if(modelclass.length>0){
+	 						//分类
+	 						$.each(modelclass,function(i,v){
+	 							var div =$("<div class='box'><h5>"+v.className+"</h5></div>");
+	 							var childDiv =$("<div class='boxcontent credentials cl_f' modelId='"+modelId+"' classId='"+v.classId+"'></div>");
+	 							$.each(v.data,function(i,img){
+	 								var image ="";
+	 								image+="<div class='list' style='height: 100px;'>";
+	 								image+="<img src='"+img.url+"' alt=''>";
+	 								image+="</div>";
+	 								image = $(image);
+	 								image.appendTo(childDiv);
+	 							})
+	 							var uuidId = new UUID();
+	 							childDiv.appendTo(div);
+	 							div.appendTo(model);
+	 						})
+	 						
+	 					}
+	 				}
+	 				$("#loading").hide();
+	 			}
+			
+		});
+		
+	});
+	
+	function goMain(){
+		if(status == 1 ) {
+			//window.location.href="../wechat/loan_view?loanProductApplyId="+loanProductApplyId+"&openId="+openId+"&status="+status;
+            param = {loanProductApplyId:loanProductApplyId,openId:openId,status:status,method:'loan_view'};
+            redirect(param);
+		} else if(status == 3) {
+			//window.location.href="../wechat/loan_view?loanProductApplyId="+loanProductApplyId+"&openId="+openId+"&status="+status;
+            param = {loanProductApplyId:loanProductApplyId,openId:openId,status:status,method:'loan_view'};
+            redirect(param);
+		} else {
+			//window.location.href="../wechat/loan_view?loanProductApplyId="+loanProductApplyId+"&openId="+openId+"&status=2";
+            param = {loanProductApplyId:loanProductApplyId,openId:openId,status:2,method:'loan_view'};
+            redirect(param);
+		}
+	}
+	
+	function getUrlParms(name){
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null){
+			return unescape(r[2]);
+		}
+		return null;
+	}
+	</script>
+	
+</body>
+</html>

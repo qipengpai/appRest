@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.openRestApi.dao.custom.CustomRegisterMapper">
+	<parameterMap type="java.util.HashMap" id="paraMap" />
+	<insert id="addRegistUser" parameterMap="paraMap">
+		INSERT INTO sysuser 
+		(
+			id,
+			password,
+			username,
+			isAccountNonLocked,
+			isEnabled,
+			createUserId,
+			createTime
+			)
+		VALUES
+		(
+			#{id,jdbcType=VARCHAR},
+			#{password,jdbcType=VARCHAR},
+			#{username,jdbcType=VARCHAR},
+			#{isAccountNonLocked,jdbcType=SMALLINT},
+			#{isEnabled,jdbcType=SMALLINT},
+			#{createUserId,jdbcType=VARCHAR},
+			#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="addRegistUserRole" parameterMap="paraMap">
+		INSERT INTO sysuserrolerel 
+		(
+			id,
+			userId,
+			roleId
+		)
+		VALUES
+		(
+			#{id,jdbcType=VARCHAR},
+			#{userId,jdbcType=VARCHAR},
+			#{roleId,jdbcType=VARCHAR}
+		)
+		
+	</insert>
+	<select id="getRoleByType" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		SELECT
+			*
+		FROM
+			sysrole
+		WHERE
+			roleCode = #{roleCode}
+	</select>
+</mapper>

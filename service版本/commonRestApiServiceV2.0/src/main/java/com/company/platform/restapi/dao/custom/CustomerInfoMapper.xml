@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.custom.CustomerInfoMapper">
+	<parameterMap type="java.util.HashMap" id="paraMap" />
+	
+	<select id="getCustomerPublicInfo" resultType="com.company.platform.restapi.model.custom.CustomerPublicInfo"
+		parameterType="java.util.HashMap">
+		SELECT
+			cp.id,
+			cp.customerNo,
+			cp.customerName,
+			cp.credentialType,
+			cp.credentialNo,
+			cp.eType,
+			cp.workType,
+			cp.orgId,
+			org.orgName,
+			cp.eStatus,
+			cp.deleteStatus,
+			cp.isBlackList,
+			cp.isRisk,
+			cp.createTime,
+			cp.createUserId,
+			cp.isRestricted,
+			cp.authority,
+			cp.availableCredit,
+			cp.usedCredit,
+			cp.creditStatus,
+			cp.cusManagerId,
+			cp.authenticationStatus,
+			cp.authenticationName,
+			cp.authenticationNo,
+			cp.noticeConfigure,
+			cp.overDueType,
+			cp.mobilePhone,
+			DATE_FORMAT(cp.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+		FROM
+			customer_public cp
+		LEFT JOIN organization org 
+			   ON org.id = cp.orgId
+		WHERE
+			cp.credentialType = #{credentialType, jdbcType=VARCHAR}
+		AND cp.credentialNo = #{credentialNo, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCustomerPublicInfoById" resultType="com.company.platform.restapi.model.custom.CustomerPublicInfo"
+		parameterType="java.lang.String">
+		SELECT
+			cp.id,
+			cp.customerNo,
+			cp.customerName,
+			cp.credentialType,
+			cp.credentialNo,
+			cp.eType,
+			cp.workType,
+			cp.orgId,
+			org.orgName,
+			cp.eStatus,
+			cp.deleteStatus,
+			cp.isBlackList,
+			cp.isRisk,
+			cp.createTime,
+			cp.createUserId,
+			cp.isRestricted,
+			cp.authority,
+			cp.availableCredit,
+			cp.usedCredit,
+			cp.creditStatus,
+			cp.cusManagerId,
+			cp.authenticationStatus,
+			cp.authenticationName,
+			cp.authenticationNo,
+			cp.noticeConfigure,
+			cp.overDueType,
+			DATE_FORMAT(cp.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+		FROM
+			customer_public cp
+		LEFT JOIN organization org 
+			   ON org.id = cp.orgId
+		WHERE
+			cp.id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCustomerContactInfo" resultType="com.company.platform.restapi.model.custom.personal.CustomerContactInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			contact,
+			eType
+		FROM
+			customer_contact_info
+		WHERE
+			isValid = 1
+		AND customerId = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCustomerLocationInfo" resultType="com.company.platform.restapi.model.custom.personal.CustomerLocationInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			address,
+			cityCode,
+			countyCode,
+			provinceCode,
+			provinceName,
+			cityName,
+			countyName,
+			eType
+		FROM
+			customer_location_info
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCustomerJobDetailInfo" resultType="com.company.platform.restapi.model.custom.personal.CustomerJobDetailInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			currentWorkInfo,
+			currentWorkType,
+			currentWorkAge,
+			totalWorkAge,
+			currentPosition,
+			monthIncome
+		FROM
+			customer_job_detail
+		WHERE
+			id = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCustomerRelationshipInfo" resultType="com.company.platform.restapi.model.custom.personal.CustomerRelationshipInfo"
+		parameterType="java.lang.String">
+		SELECT
+			realName,
+			credentialType,
+			credentialNo,
+			relType,
+			phoneNum,
+			address,
+			unit
+		FROM
+			customer_relationship
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getPersonalCustomerInfo" resultType="com.company.platform.restapi.model.custom.personal.PersonalCustomerBaseInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			gender,
+			DATE_FORMAT(birthday,'%Y-%m-%d') birthday,
+			hasChild,
+			education,
+			martialStatus,
+			occupationStatus,
+			hasDrivingLicense,
+			remark
+		FROM
+			personal_customer_info
+		WHERE
+			id = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCorporationCustomerContactinfo" resultType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerContactinfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			name,
+			relationship,
+			telephone,
+			company,
+			typeOfCertificate,
+			certificateNnumber
+		FROM
+			corporation_customer_contactinformation
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCorporationCustomerShareholderInfo" resultType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerShareholderInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			capital,
+			capitalType,
+			isRepresent,
+			shareHolderName,
+			sharePercent
+		FROM
+			corporation_customer_shareholder
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCorporationBaseAndLrInfo" resultType="com.company.platform.restapi.model.custom.enterprise.CorporationBaseAndLrInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			lrName,
+			lrSex,
+			lrCertType,
+			lrCertNo,
+			lrMobile,
+			lrAge,
+			corporationName,
+			taxId,
+			registerCapital,
+			DATE_FORMAT(registerTime,'%Y-%m-%d %H:%i:%s') registerTime,
+			industryType,
+			staffCount
+		FROM
+			corporation_info
+		WHERE
+			id = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="savePersonalCustomerInfo" parameterType="com.company.platform.restapi.model.custom.personal.PersonalCustomerBaseInfo">
+		UPDATE
+			personal_customer_info
+		<set>
+			<if test="gender!=null">
+				gender = #{gender, jdbcType=VARCHAR},
+			</if>
+            <if test="birthday!=null and birthday!=''">
+            	birthday = #{birthday, jdbcType=VARCHAR},
+            </if>
+            <if test="hasChild!=null and hasChild!=''">
+            	hasChild = #{hasChild, jdbcType=VARCHAR},
+            </if>
+            <if test="education!=null">
+            	education = #{education, jdbcType=VARCHAR},
+            </if>
+            <if test="martialStatus!=null">
+            	martialStatus = #{martialStatus, jdbcType=VARCHAR},
+            </if>
+            <if test="occupationStatus!=null">
+            	occupationStatus = #{occupationStatus, jdbcType=VARCHAR},
+            </if>
+            <if test="hasDrivingLicense!=null and hasDrivingLicense!=''">
+            	hasDrivingLicense = #{hasDrivingLicense, jdbcType=VARCHAR},
+            </if>
+            <if test="remark!=null">
+            	remark = #{remark, jdbcType=VARCHAR}
+            </if>
+        </set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="savePersonalCustomerInfoOnline" parameterType="com.company.platform.restapi.model.custom.personal.PersonalCustomerBaseInfo">
+		UPDATE
+			personal_customer_info
+		SET
+			gender = #{gender, jdbcType=VARCHAR},
+            birthday = #{birthday, jdbcType=VARCHAR},
+            hasChild = #{hasChild, jdbcType=VARCHAR},
+            education = #{education, jdbcType=VARCHAR},
+            martialStatus = #{martialStatus, jdbcType=VARCHAR},
+            occupationStatus = #{occupationStatus, jdbcType=VARCHAR},
+            hasDrivingLicense = #{hasDrivingLicense, jdbcType=VARCHAR},
+            remark = #{remark, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertCustomerLocationInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerLocationInfo"> 
+		INSERT INTO 
+			customer_location_info 
+		(
+			id,
+			customerId,
+			eType,
+			provinceCode,
+			provinceName,
+			cityCode,
+			cityName,
+			countyCode,
+			countyName,
+			address
+		) 
+		VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{customerId, jdbcType=VARCHAR},
+			#{etype, jdbcType=VARCHAR},
+			#{provinceCode, jdbcType=VARCHAR},
+			#{provinceName, jdbcType=VARCHAR},
+			#{cityCode, jdbcType=VARCHAR},
+			#{cityName, jdbcType=VARCHAR},
+			#{countyCode, jdbcType=VARCHAR},
+			#{countyName, jdbcType=VARCHAR},
+			#{address, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateCustomerLocationInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerLocationInfo">
+		UPDATE
+			customer_location_info
+		<set>
+			<if test="provinceCode!=null">
+				provinceCode = #{provinceCode, jdbcType=VARCHAR},
+			</if>
+			<if test="provinceName!=null">
+				provinceName = #{provinceName, jdbcType=VARCHAR},
+			</if>
+			<if test="cityCode!=null">
+				cityCode = #{cityCode, jdbcType=VARCHAR},
+			</if>
+			<if test="cityName!=null">
+				cityName = #{cityName, jdbcType=VARCHAR},
+			</if>
+			<if test="countyCode!=null">
+				countyCode = #{countyCode, jdbcType=VARCHAR},
+			</if>
+			<if test="countyName!=null">
+				countyName = #{countyName, jdbcType=VARCHAR},
+			</if>
+			<if test="address!=null">
+				address = #{address, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCustomerLocationInfoOnline" parameterType="com.company.platform.restapi.model.custom.personal.CustomerLocationInfo">
+		UPDATE
+			customer_location_info
+		SET
+			provinceCode = #{provinceCode, jdbcType=VARCHAR},
+			provinceName = #{provinceName, jdbcType=VARCHAR},
+			cityCode = #{cityCode, jdbcType=VARCHAR},
+			cityName = #{cityName, jdbcType=VARCHAR},
+			countyCode = #{countyCode, jdbcType=VARCHAR},
+			countyName = #{countyName, jdbcType=VARCHAR},
+			address = #{address, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertCustomerContactInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerContactInfo"> 
+		INSERT INTO 
+			customer_contact_info 
+		(
+			id,
+			customerId,
+			eType,
+			contact,
+			isValid
+		) 
+		VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{customerId, jdbcType=VARCHAR},
+			#{etype, jdbcType=VARCHAR},
+			#{contact, jdbcType=VARCHAR},
+			1
+		)
+	</insert>
+	
+	<update id="updateCustomerContactInfoOnline" parameterType="com.company.platform.restapi.model.custom.personal.CustomerContactInfo">
+		UPDATE
+			customer_contact_info
+		SEt
+			contact = #{contact, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCustomerContactInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerContactInfo">
+		UPDATE
+			customer_contact_info
+		<set>
+			<if test="contact!=null">
+				contact = #{contact, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCustomerJobDetailInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerJobDetailInfo">
+		UPDATE
+			customer_job_detail
+		<set>
+			<if test="currentWorkInfo!=null">  
+                currentWorkInfo = #{currentWorkInfo, jdbcType=VARCHAR},
+            </if>  
+			<if test="currentWorkType!=null">  
+                currentWorkType = #{currentWorkType, jdbcType=VARCHAR},
+            </if>
+			<if test="currentWorkAge!=null">  
+                currentWorkAge = #{currentWorkAge, jdbcType=VARCHAR},
+            </if>
+			<if test="totalWorkAge!=null">  
+                totalWorkAge = #{totalWorkAge, jdbcType=VARCHAR},
+            </if>
+			<if test="currentPosition!=null">  
+                currentPosition = #{currentPosition, jdbcType=VARCHAR},
+            </if>
+            <if test="monthIncome!=null">  
+                monthIncome = #{monthIncome, jdbcType=VARCHAR}
+            </if>
+		</set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateCustomerJobDetailInfoOnline" parameterType="com.company.platform.restapi.model.custom.personal.CustomerJobDetailInfo">
+		UPDATE
+			customer_job_detail
+		SET
+            currentWorkInfo = #{currentWorkInfo, jdbcType=VARCHAR},
+            currentWorkType = #{currentWorkType, jdbcType=VARCHAR},
+            currentWorkAge = #{currentWorkAge, jdbcType=VARCHAR},
+            totalWorkAge = #{totalWorkAge, jdbcType=VARCHAR},
+            currentPosition = #{currentPosition, jdbcType=VARCHAR},
+            monthIncome = #{monthIncome, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+
+	<delete id="deleteCustomerRelationshipInfo" parameterType="java.lang.String"> 
+		DELETE
+		FROM
+			customer_relationship
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertCustomerRelationshipInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerRelationshipInfo"> 
+		INSERT INTO 
+			customer_relationship 
+		(
+			id,
+			customerId,
+			realName,
+			phoneNum,
+			relType,
+			address,
+			credentialType,
+			credentialNo,
+			unit
+		) 
+		VALUES 
+		(
+			UUID(),
+			#{customerId, jdbcType=VARCHAR},
+			#{realName, jdbcType=VARCHAR},
+			#{phoneNum, jdbcType=VARCHAR},
+			#{relType, jdbcType=VARCHAR},
+			#{address, jdbcType=VARCHAR},
+			#{credentialType, jdbcType=VARCHAR},
+			#{credentialNo, jdbcType=VARCHAR},
+			#{unit, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="selectCustomerRelationshipInfo" resultType="com.company.platform.restapi.model.custom.personal.CustomerRelationshipInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			customerId,
+			realName,
+			phoneNum,
+			relType,
+			address,
+			credentialType,
+			credentialNo,
+			unit
+		FROM
+			customer_relationship
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+		AND	credentialType = #{credentialType, jdbcType=VARCHAR}
+		AND credentialNo = #{credentialNo, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateCustomerRelationshipInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerRelationshipInfo">
+		UPDATE
+			customer_relationship
+		<set>
+			<if test="realName!=null">  
+                realName = #{realName, jdbcType=VARCHAR},  
+            </if>
+			<if test="phoneNum!=null">  
+                phoneNum = #{phoneNum, jdbcType=VARCHAR},
+            </if>
+			<if test="relType!=null">  
+                relType = #{relType, jdbcType=VARCHAR},
+            </if>
+			<if test="address!=null">  
+                address = #{address, jdbcType=VARCHAR},
+            </if>
+			<if test="unit!=null">  
+                unit = #{unit, jdbcType=VARCHAR}
+            </if>
+		</set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteCorporationCustomerContactinfo" parameterType="java.lang.String"> 
+		DELETE
+		FROM
+			corporation_customer_contactinformation
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertCorporationCustomerContactinfo" parameterType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerContactinfo"> 
+		INSERT INTO 
+			corporation_customer_contactinformation 
+		(
+			id,
+			customerId,
+			name,
+			relationship,
+			telephone,
+			company,
+			typeOfCertificate,
+			certificateNnumber
+		) 
+		VALUES 
+		(
+			UUID(),
+			#{customerId, jdbcType=VARCHAR},
+			#{name, jdbcType=VARCHAR},
+			#{relationship, jdbcType=VARCHAR},
+			#{telephone, jdbcType=VARCHAR},
+			#{company, jdbcType=VARCHAR},
+			#{typeOfCertificate, jdbcType=VARCHAR},
+			#{certificateNnumber, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="selectCorporationCustomerContactinfo" resultType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerContactinfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			customerId,
+			name,
+			relationship,
+			telephone,
+			company,
+			typeOfCertificate,
+			certificateNnumber
+		FROM
+			corporation_customer_contactinformation
+		WHERE
+			typeOfCertificate = #{typeOfCertificate, jdbcType=VARCHAR}
+		AND certificateNnumber = #{certificateNnumber, jdbcType=VARCHAR}
+		AND customerId = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateCorporationCustomerContactinfo" parameterType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerContactinfo">
+		UPDATE
+			corporation_customer_contactinformation
+		<set>
+			<if test="name!=null">
+				name = #{name, jdbcType=VARCHAR},
+			</if>
+			<if test="relationship!=null">
+				relationship = #{relationship, jdbcType=VARCHAR},
+			</if>
+			<if test="telephone!=null">
+				telephone = #{telephone, jdbcType=VARCHAR},
+			</if>
+			<if test="company!=null">
+				company = #{company, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="deleteCorporationCustomerShareholderInfo" parameterType="java.lang.String"> 
+		DELETE
+		FROM
+			corporation_customer_shareholder
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertCorporationCustomerShareholderInfo" parameterType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerShareholderInfo"> 
+		INSERT INTO 
+			corporation_customer_shareholder 
+		(
+			id,
+			customerId,
+			shareHolderName,
+			sharePercent,
+			capitalType,
+			isRepresent,
+			capital
+		) 
+		VALUES 
+		(
+			UUID(),
+			#{customerId, jdbcType=VARCHAR},
+			#{shareHolderName, jdbcType=VARCHAR},
+			#{sharePercent, jdbcType=VARCHAR},
+			#{capitalType, jdbcType=VARCHAR},
+			#{isRepresent, jdbcType=VARCHAR},
+			#{capital, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="selectCorporationCustomerShareholderInfo" resultType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerShareholderInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			customerId,
+			shareHolderName,
+			sharePercent,
+			capitalType,
+			isRepresent,
+			capital
+		FROM
+			corporation_customer_shareholder
+		WHERE
+			shareHolderName = #{shareHolderName, jdbcType=VARCHAR}
+		AND customerId = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateCorporationCustomerShareholderInfo" parameterType="com.company.platform.restapi.model.custom.enterprise.CorporationCustomerShareholderInfo">
+		UPDATE
+			corporation_customer_shareholder
+		SET
+			sharePercent = #{sharePercent, jdbcType=VARCHAR},
+			capitalType = #{capitalType, jdbcType=VARCHAR},
+			isRepresent = #{isRepresent, jdbcType=VARCHAR},
+			capital = #{capital, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCorporationBaseAndLrInfo" parameterType="com.company.platform.restapi.model.custom.enterprise.CorporationBaseAndLrInfo">
+		UPDATE
+			corporation_info
+		<set>
+			<if test="lrName!=null and lrName!=''">
+				lrName = #{lrName, jdbcType=VARCHAR},
+			</if>
+			<if test="lrSex!=null and lrSex!=''">
+				lrSex = #{lrSex, jdbcType=VARCHAR},
+			</if>
+			<if test="lrAge!=null and lrAge!=''">
+				lrAge = #{lrAge, jdbcType=VARCHAR},
+			</if>
+			<if test="lrCertNo!=null and lrCertNo!=''">
+				lrCertNo = #{lrCertNo, jdbcType=VARCHAR},
+			</if>
+			<if test="lrMobile!=null">
+				lrMobile = #{lrMobile, jdbcType=VARCHAR},
+			</if>
+			<if test="lrCertType!=null and lrCertType!=''">
+				lrCertType = #{lrCertType, jdbcType=VARCHAR},
+			</if>
+			<if test="corporationName!=null and corporationName!=''">
+				corporationName = #{corporationName, jdbcType=VARCHAR},
+			</if>
+			<if test="taxId!=null and taxId!=''">
+				taxId = #{taxId, jdbcType=VARCHAR},
+			</if>
+			<if test="registerCapital!=null and registerCapital!=''">
+				registerCapital = #{registerCapital, jdbcType=VARCHAR},
+			</if>
+			<if test="registerTime!=null and registerTime!=''">
+				registerTime = #{registerTime, jdbcType=VARCHAR},
+			</if>
+			<if test="industryType!=null and industryType!=''">
+				industryType = #{industryType, jdbcType=VARCHAR},
+			</if>
+			<if test="staffCount!=null and staffCount!=''">
+				staffCount = #{staffCount, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCorporationBaseAndLrInfoOnLine" parameterType="com.company.platform.restapi.model.custom.enterprise.CorporationBaseAndLrInfo">
+		UPDATE
+			corporation_info
+		SET
+			lrName = #{lrName, jdbcType=VARCHAR},
+			lrSex = #{lrSex, jdbcType=VARCHAR},
+			lrAge = #{lrAge, jdbcType=VARCHAR},
+			lrCertNo = #{lrCertNo, jdbcType=VARCHAR},
+			lrMobile = #{lrMobile, jdbcType=VARCHAR},
+			lrCertType = #{lrCertType, jdbcType=VARCHAR},
+			corporationName = #{corporationName, jdbcType=VARCHAR},
+			taxId = #{taxId, jdbcType=VARCHAR},
+			registerCapital = #{registerCapital, jdbcType=VARCHAR},
+			registerTime = #{registerTime, jdbcType=VARCHAR},
+			industryType = #{industryType, jdbcType=VARCHAR},
+			staffCount = #{staffCount, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getCustomerinfo"
+		resultType="com.company.platform.restapi.model.custom.CustomerInfo"
+		parameterType="java.lang.String">
+		select t1.customerId,t2.customerNo,t2.customerName,t2.credentialType,t2.credentialNo,
+		t3.gender,DATE_FORMAT(t2.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+		DATE_FORMAT(t3.birthday,'%Y-%m-%d %H:%i:%s') birthday,t3.hasChild,t3.education,t3.martialStatus,
+		regloc.eType addressType, regloc.provinceCode registryProvinceCode, regloc.cityCode registryCityCode, regloc.countyCode registryCountyCode, regloc.address registryAddress, livloc.eType liveAddressType, livloc.provinceCode liveProvinceCode, livloc.cityCode liveCityCode,livloc.countyCode liveCountyCode,livloc.address liveAddress,
+		t6.currentWorkInfo,t6.currentWorkType,t6.currentWorkAge,t6.totalWorkAge,t6.currentPosition
+		,inf.contact currentMobile, worloc.eType workAddressType,worloc.provinceCode workProvinceCode, worloc.cityCode workCityCode, worloc.countyCode workCountyCode, worloc.address workAddress
+	 	,t2.eType, t2.updateTime
+	 	from loan_product_apply t1
+		join customer_public t2 on t2.id=t1.customerId
+		join personal_customer_info t3 on t3.id=t1.customerId
+	 	join customer_job_detail t6 on t6.id=t2.id
+	 	left join customer_location_info regloc on regloc.customerId=t2.id and regloc.eType='registry'
+		left join  customer_location_info livloc on livloc.customerId=t2.id and livloc.eType='live'
+		left join  customer_location_info worloc on worloc.customerId=t2.id and worloc.eType='work'
+		left join customer_contact_info inf on inf.customerId=t2.id and inf.eType='pMobile'
+		where t1.id = #{loanProductApplyId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getEntCustomerInfo"
+		resultType="com.company.platform.restapi.model.custom.EntCustomerInfo"
+		parameterType="java.lang.String">
+		SELECT app.customerId, cus.customerNo,cus.customerName, cor.corporationName,cor.taxId, cor.lrCertType, cor.lrCertNo, cor.industryType, cor.staffCount, DATE_FORMAT(cor.registerTime,'%Y-%m-%d %H:%i:%s') registerTime, cor.registerCapital registered_capital , 
+		regloc.provinceCode address_province, regloc.cityCode address_city,  regloc.address address_detailed,worloc.provinceCode workProvinceCode, worloc.cityCode workCityCode, worloc.countyCode workCountyCode, worloc.address workAddress
+		,app.orgId
+		FROM loan_product_apply app
+ 		join customer_public cus on cus.id = app.customerId
+ 		left JOIN  corporation_info cor on cor.id = app.customerId 
+		left join customer_location_info regloc on regloc.customerId=cus.id and regloc.eType='registry'
+		left join  customer_location_info worloc on worloc.customerId=cus.id and worloc.eType='work'
+		where app.id = #{loanProductApplyId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getContactsInfo"
+		resultType="com.company.platform.restapi.model.custom.ContactsInfo"
+		parameterType="java.lang.String">
+		select cusRel.certificateNnumber, cusRel.company,app.customerId,cusRel.id,cusRel.name,cusRel.relationship,cusRel.telephone,cusRel.typeOfCertificate  from loan_product_apply app 
+ 		join corporation_customer_contactinformation cusRel on app.customerId = cusRel.customerId
+		WHERE app.id = #{loanProductApplyId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getSelContactsInfo"
+		resultType="com.company.platform.restapi.model.custom.SelContactsInfo"
+		parameterType="java.lang.String">
+		select cusRel.credentialNo, cusRel.address,cusRel.unit,cusRel.customerId,cusRel.id,cusRel.realName,cusRel.relType,cusRel.phoneNum,cusRel.credentialType  from loan_product_apply app 
+ 		left join customer_relationship cusRel on app.customerId = cusRel.customerId
+		WHERE app.id = #{loanProductApplyId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="modifyCustomerPublicUpdateTimeById" parameterType="java.lang.String">
+		UPDATE
+			customer_public
+		SET
+			updateTime = #{updateTime, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="getCustomerMateInfo" resultType="com.company.platform.restapi.model.custom.personal.CustomerMateInfo"
+		parameterType="java.lang.String">
+		select
+			name,
+			credentialType,
+			credentialNo,
+			telephoneNumber,
+			remark
+		from
+			customer_mate_info
+		where
+			id = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getCustomerAssetInfo" resultType="com.company.platform.restapi.model.custom.personal.CustomerAssetInfo"
+		parameterType="java.lang.String">
+		select
+			t1.hasHouse,
+			t1.currentHouseType,
+			t1.currentHouseArea,
+			t2.hasVehicle,
+			t2.vehicleNo,
+			t2.remark
+		from
+			customer_house_info t1
+		left join
+			customer_vehicle_info t2
+		  on t1.id = t2.id
+		where
+			t1.id = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteCustomerMateInfo" parameterType="java.lang.String">
+		delete
+		from
+			customer_mate_info
+		where
+			id = #{customerId, jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="insertCustomerMateInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerMateInfo">
+		insert into
+			customer_mate_info
+		(
+			id,
+			name,
+			credentialType,
+			credentialNo,
+			telephoneNumber,
+			remark
+		)
+		values
+		(
+			#{id, jdbcType=VARCHAR},
+			#{name, jdbcType=VARCHAR},
+			#{credentialType, jdbcType=VARCHAR},
+			#{credentialNo, jdbcType=VARCHAR},
+			#{telephoneNumber, jdbcType=VARCHAR},
+			#{remark, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateCustomerHouseInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerAssetInfo">
+		update
+			customer_house_info
+		set
+			hasHouse = #{hasHouse, jdbcType=VARCHAR},
+			currentHouseType = #{currentHouseType, jdbcType=VARCHAR},
+			currentHouseArea = #{currentHouseArea, jdbcType=VARCHAR}
+		where
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCustomerVehicleInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerAssetInfo">
+		update
+			customer_vehicle_info
+		set
+			hasVehicle = #{hasVehicle, jdbcType=VARCHAR},
+			vehicleNo = #{vehicleNo, jdbcType=VARCHAR},
+			remark = #{remark, jdbcType=VARCHAR}
+		where
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<select id="selectCustomerMateInfo" parameterType="java.lang.String"
+		resultType="com.company.platform.restapi.model.custom.personal.CustomerMateInfo">
+		SELECT
+			id,
+			`name`,
+			credentialType,
+			credentialNo,
+			telephoneNumber,
+			remark
+		FROM
+			customer_mate_info
+		WHERE
+			id = #{customerId, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateCustomerMateInfo" parameterType="com.company.platform.restapi.model.custom.personal.CustomerMateInfo">
+		UPDATE
+			customer_mate_info
+		<set>
+			<if test="name!=null">
+				name = #{name, jdbcType=VARCHAR},
+			</if>
+			<if test="credentialType!=null">
+				credentialType = #{credentialType, jdbcType=VARCHAR},
+			</if>
+			<if test="credentialNo!=null">
+				credentialNo = #{credentialNo, jdbcType=VARCHAR},
+			</if>
+			<if test="telephoneNumber!=null">
+				telephoneNumber = #{telephoneNumber, jdbcType=VARCHAR},
+			</if>
+			<if test="remark!=null">
+				remark = #{remark, jdbcType=VARCHAR}
+			</if>
+		</set>
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCustomerHouseInfoOffline" parameterType="com.company.platform.restapi.model.custom.personal.CustomerAssetInfo">
+		update
+				customer_house_info
+			<set>
+				<if test="hasHouse!=null">
+					hasHouse = #{hasHouse, jdbcType=VARCHAR},
+				</if>
+				<if test="currentHouseType!=null">
+					currentHouseType = #{currentHouseType, jdbcType=VARCHAR},
+				</if>
+				<if test="currentHouseArea!=null">
+					currentHouseArea = #{currentHouseArea, jdbcType=VARCHAR}
+				</if>
+			</set>
+			where
+				id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="updateCustomerVehicleInfoOffline" parameterType="com.company.platform.restapi.model.custom.personal.CustomerAssetInfo">
+		update
+			customer_vehicle_info
+		<set>
+			<if test="hasVehicle!=null">
+				hasVehicle = #{hasVehicle, jdbcType=VARCHAR},
+			</if>
+			<if test="vehicleNo!=null">
+				vehicleNo = #{vehicleNo, jdbcType=VARCHAR},
+			</if>
+			<if test="remark!=null">
+				remark = #{remark, jdbcType=VARCHAR}
+			</if>
+		</set>
+		where
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="modifyCustomerPublicInfo" parameterType="java.lang.String">
+		UPDATE
+			customer_public
+		SET
+			mobilePhone = #{mobilePhone, jdbcType=VARCHAR}
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertCustomerLocation" parameterType="java.lang.String">
+		insert into
+			customer_location_info
+		(
+			id,
+			customerId,
+			eType,
+			address
+		)
+		values
+		(
+			UUID(),
+			#{customerId, jdbcType=VARCHAR},
+			#{eType, jdbcType=VARCHAR},
+			#{address, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	
+	<select id="selectCustomerInfo" resultType="com.company.platform.restapi.model.custom.CustomerInfo" parameterType="java.lang.String">
+		SELECT * from customer_public where customerName=#{name} and credentialNo=#{idcard} and mobilePhone=#{phone}
+			
+	</select>
+	
+	<update id="updateCustomerLocationAddress" parameterType="java.lang.String">
+		UPDATE
+			customer_location_info
+		SET
+			address = #{address, jdbcType=VARCHAR}
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+		AND
+			eType = 'registry'
+	</update>
+	
+	<select id="getHistoryAddress" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT
+			id
+		FROM
+			customer_location_info
+		WHERE
+			customerId = #{customerId, jdbcType=VARCHAR}
+		AND
+			eType = 'registry'
+		LIMIT 0,1
+	</select>
+</mapper>

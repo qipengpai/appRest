@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.MerchantApplyMapper">
+	
+	<insert id="insertMerchantApplyInfo" parameterType="com.company.platform.restapi.model.loan.MerchantApplyInfo"> 
+		INSERT INTO 
+			merchant_apply 
+		(
+			id,
+			bussinessType,
+			bussinessId,
+			merchantId,
+			orgId,
+			customerId,
+			applyAmount,
+			replyAmount,
+			rechargeType,
+			applySettlementAmount,
+			applyTime,
+			replySettlementAmount,
+			replyTime,
+			settlementState,
+			applyState,
+			releaseTime,
+			settleId
+		) 
+		VALUES 
+		(
+			#{id, jdbcType=VARCHAR},
+			#{bussinessType, jdbcType=SMALLINT},
+			#{bussinessId, jdbcType=VARCHAR},
+			#{merchantId, jdbcType=VARCHAR},
+			#{orgId, jdbcType=VARCHAR},
+			#{customerId, jdbcType=VARCHAR},
+			#{applyAmount, jdbcType=DECIMAL},
+			#{replyAmount, jdbcType=DECIMAL},
+			#{rechargeType, jdbcType=SMALLINT},
+			#{applySettlementAmount, jdbcType=DECIMAL},
+			#{applyTime, jdbcType=TIMESTAMP},
+			#{replySettlementAmount, jdbcType=DECIMAL},
+			#{replyTime, jdbcType=TIMESTAMP},
+			#{settlementState, jdbcType=SMALLINT},
+			#{applyState, jdbcType=SMALLINT},
+			#{releaseTime, jdbcType=TIMESTAMP},
+			#{settleId, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="getMerchantApplyByBusiness" parameterType="java.lang.String">
+
+		SELECT
+			id,
+			bussinessType,
+			bussinessId,
+			merchantId,
+			orgId,
+			customerId,
+			applyAmount,
+			replyAmount,
+			rechargeType,
+			applySettlementAmount,
+			applyTime,
+			replySettlementAmount,
+			replyTime,
+			settlementState,
+			applyState,
+			releaseTime,
+			settleId
+		FROM
+			merchant_apply
+		WHERE
+			bussinessType=#{bussinessType, jdbcType=SMALLINT} 
+		AND 
+			bussinessId=#{bussinessId, jdbcType=VARCHAR}
+
+	</select>
+	<update id="updateMerchantApplyInfo" parameterType="java.lang.String">
+		
+		UPDATE
+			merchant_apply
+		SET
+			bussinessType=#{bussinessType, jdbcType=SMALLINT},
+			bussinessId=#{bussinessId, jdbcType=VARCHAR},
+			merchantId=#{merchantId, jdbcType=VARCHAR},
+			customerId=#{customerId, jdbcType=VARCHAR},
+			applyAmount=#{applyAmount, jdbcType=DECIMAL},
+			replyAmount=#{replyAmount, jdbcType=DECIMAL},
+			rechargeType=#{rechargeType, jdbcType=SMALLINT},
+			applySettlementAmount=#{applySettlementAmount, jdbcType=DECIMAL},
+			applyTime=#{applyTime, jdbcType=TIMESTAMP},
+			replySettlementAmount=#{replySettlementAmount, jdbcType=DECIMAL},
+			replyTime=#{replyTime, jdbcType=TIMESTAMP},
+			settlementState=#{settlementState, jdbcType=SMALLINT},
+			applyState=#{applyState, jdbcType=TIMESTAMP},
+			releaseTime=#{releaseTime, jdbcType=TIMESTAMP}
+		WHERE
+			id=#{id, jdbcType=VARCHAR}
+	
+	</update>
+
+</mapper>

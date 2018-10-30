@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.custom.CorporationInfoMapper">
+	
+	<select id="selectByPrimaryKey" resultType="com.company.platform.restapi.model.custom.CorporationInfo"
+		parameterType="java.lang.String">
+		SELECT
+			id, 
+			customerName, 
+			corporationName, 
+			industryType, 
+			registerTime, 
+			registerCapital,
+			license, 
+			taxId, 
+			orgNo, 
+			businessType, 
+			lrName, 
+			lrSex, 
+			lrAge, 
+			lrCountry, 
+			lrCertNo,
+			lrMobile, 
+			lrEduType, 
+			lrPhone, 
+			lrCertType, 
+			staffCount
+		FROM
+			corporation_info
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateByPrimaryKey" parameterType="com.company.platform.restapi.model.custom.CorporationInfo"> 
+		UPDATE
+			corporation_info 
+		SET 
+			customerName = #{customerName,jdbcType=VARCHAR},
+			corporationName = #{corporationName,jdbcType=VARCHAR},
+			industryType = #{industryType,jdbcType=VARCHAR},
+			registerTime = #{registerTime,jdbcType=DATE},",
+			registerCapital = #{registerCapital,jdbcType=DECIMAL},
+			license = #{license,jdbcType=VARCHAR},
+			taxId = #{taxId,jdbcType=VARCHAR},
+			orgNo = #{orgNo,jdbcType=VARCHAR},
+			businessType = #{businessType,jdbcType=VARCHAR},
+			lrName = #{lrName,jdbcType=VARCHAR},
+			lrSex = #{lrSex,jdbcType=VARCHAR},
+			lrAge = #{lrAge,jdbcType=SMALLINT},
+			lrCountry = #{lrCountry,jdbcType=VARCHAR},
+			lrCertNo = #{lrCertNo,jdbcType=VARCHAR},
+			lrMobile = #{lrMobile,jdbcType=VARCHAR},
+			lrEduType = #{lrEduType,jdbcType=VARCHAR},
+			lrPhone = #{lrPhone,jdbcType=VARCHAR},
+			lrCertType = #{lrCertType,jdbcType=VARCHAR},
+			staffCount = #{staffCount,jdbcType=SMALLINT},
+			turnover = #{turnover, jdbcType=DECIMAL},
+			applicantType = #{applicantType, jdbcType=VARCHAR},
+			siteOwnership = #{siteOwnership, jdbcType=VARCHAR},
+			beginRunTime = #{beginRunTime, jdbcType=DATE},
+			manageRange = #{manageRange, jdbcType=VARCHAR},
+			telephone = #{telephone, jdbcType=VARCHAR}
+		WHERE 
+			id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertSelective" parameterType="com.company.platform.restapi.model.custom.CorporationInfo"> 
+        INSERT INTO
+        	corporation_info
+        (
+	        id,
+	        customerName,
+	        corporationName,
+	        industryType,
+	        registerTime,
+	        registerCapital,
+	        license,
+	        taxId,
+	        orgNo,
+	        businessType,
+	        lrName,
+	        lrSex,
+	        lrAge,
+	        lrCountry,
+	        lrCertNo,
+	        lrMobile,
+	        lrEduType,
+	        lrPhone,
+	        lrCertType,
+	        staffCount,
+	        turnover,
+	        applicantType,
+	        siteOwnership,
+	        beginRunTime,
+	        manageRange,
+	        telephone
+        )	
+        VALUES 
+		(
+			#{id,jdbcType=VARCHAR},
+			#{customerName,jdbcType=VARCHAR},
+			#{corporationName,jdbcType=VARCHAR},
+			#{industryType,jdbcType=VARCHAR},
+			#{registerTime,jdbcType=DATE},
+			#{registerCapital,jdbcType=DECIMAL},
+			#{license,jdbcType=VARCHAR},
+			#{taxId,jdbcType=VARCHAR},
+			#{orgNo,jdbcType=VARCHAR},
+			#{businessType,jdbcType=VARCHAR},
+			#{lrName,jdbcType=VARCHAR},
+			#{lrSex,jdbcType=VARCHAR},
+			#{lrAge,jdbcType=SMALLINT},
+			#{lrCountry,jdbcType=VARCHAR},
+			#{lrCertNo,jdbcType=VARCHAR},
+			#{lrMobile,jdbcType=VARCHAR},
+			#{lrEduType,jdbcType=VARCHAR},
+			#{lrPhone,jdbcType=VARCHAR},
+			#{lrCertType,jdbcType=VARCHAR},
+			#{staffCount,jdbcType=SMALLINT},
+			#{turnover,jdbcType=DECIMAL},
+			#{applicantType,jdbcType=VARCHAR},
+			#{siteOwnership,jdbcType=VARCHAR},
+			#{beginRunTime,jdbcType=DATE},
+			#{manageRange,jdbcType=VARCHAR},
+			#{telephone,jdbcType=VARCHAR}
+		)	
+	</insert>
+
+</mapper>

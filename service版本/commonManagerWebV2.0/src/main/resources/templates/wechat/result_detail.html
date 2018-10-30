@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">     
+<meta content="black" name="apple-mobile-web-app-status-bar-style">     
+<meta content="telephone=no" name="format-detection">
+<title>信审结果</title>
+<link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"></link>
+  </head>
+
+<body>
+	<input type="hidden" id="loanProductApplyId"  th:value="${loanProductApplyId} "/>
+	<div class="main" id="mainlist"></div>
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<script th:src="@{/js/jquery.cookie.js}"></script>
+	<script th:src="@{/js/global.js}"></script>
+	<script th:src="@{/js/json.js}"></script>
+	<script th:src="@{/js/weixin.js}"></script>
+	<script th:src="@{/js/redirect.js}"></script>
+	<script type="text/javascript">
+	var loanProductApplyId,openId;
+	var htmlFlag = 0;
+	var status = 0;
+	htmlFlag = getUrlParms('htmlFlag');
+	status = getUrlParms('status');
+    var param={};
+	$(function(){
+		openId = $.cookie('openId');
+		loanProductApplyId = $("#loanProductApplyId").val();
+		
+		$.zkbr.ajax({
+			url: "../wechat/queryCreditResult",
+ 		  	type:"post",
+ 		  	dataType:"json",
+ 		  	data:{
+ 		  		"openId":openId,
+ 		  		"loanProductApplyId":loanProductApplyId
+ 		  	},
+ 		  	success:function(data){
+				if(data.exceptionFlag=="0000"&&data.responseCode=="00000000"){
+					
+					var reslist = '';
+					
+					if('0' == data.resultSet.intoPieceResult){ // 人工复合
+						reslist += '<div class="box result result-orange">';
+						reslist += '<div class="step"><span>1</span></div>';
+						reslist += '<h5>核验结果</h5>';
+						reslist += '<div class="boxcontent">';
+						reslist += '<img src="../img/result-1.png" alt="">';
+						reslist += '<h6>复核原因</h6>';
+						reslist += '<p>' + data.resultSet.message + '</p>';
+						reslist += '</div>';
+						reslist += '</div>';
+						
+					}else if('1' == data.resultSet.intoPieceResult){ // 通过
+						reslist += '<div class="box result result-green">';
+						reslist += '<div class="step"><span>1</span></div>';
+						reslist += '<h5>核验结果</h5>';
+						reslist += '<div class="boxcontent">';
+						reslist += '<img src="../img/result-2.png" alt="">';
+						reslist += '</div>';
+						reslist += '</div>';
+						
+						reslist += '<div class="box result">';
+						reslist += '<div class="step"><span>2</span></div>';
+						reslist += '<h5>信审结果</h5>';
+						reslist += '</div>';
+						
+						if('1' == data.resultSet.creditResult){ // 通过
+							reslist += '<div class="box result result-green">';
+							reslist += '<div class="step"><span>2</span></div>';
+							reslist += '<h5>信审结果<span class="fl_r"><font>评分：</font>' + data.resultSet.score + '</span></h5>';
+							reslist += '<div class="boxcontent">';
+							reslist += '<img src="../img/result-2.png" alt="">';
+							reslist += '</div>';
+							reslist += '</div>';
+						}else{ // 拒绝
+							reslist += '<div class="box result result-red">';
+							reslist += '<div class="step"><span>2</span></div>';
+							reslist += '<h5>信审结果<span class="fl_r"><font>评分：</font>' + data.resultSet.score + '</span></h5>';
+							reslist += '<div class="boxcontent">';
+							reslist += '<img src="../img/result-3.png" alt="">';
+							reslist += '</div>';
+							reslist += '</div>';
+						}
+					}else{ // 拒绝
+						reslist += '<div class="box result result-red">';
+						reslist += '<div class="step"><span>1</span></div>';
+						reslist += '<h5>核验结果</h5>';
+						reslist += '<div class="boxcontent">';
+						reslist += '<img src="../img/result-3.png" alt="">';
+						reslist += '<h6>拒绝原因</h6>';
+						reslist += '<p>' + data.resultSet.message + '</p>';
+						reslist += '</div>';
+						reslist += '</div>';
+					}
+					
+				
+					$("#mainlist").append(reslist);
+					
+					$("#mainlist").append("<a href='#' class='btn-back'><img src='../img/back.png' alt='' onclick='goMain()'></a>");
+				}else{
+					alert(data.responseMessage);
+				}
+							
+			}
+		});
+		
+	});
+	
+	function goMain()
+	{
+		/*if(htmlFlag == 6 && status == 2) {
+			window.location.href="../wechat/apply_manage?taskStatus=2&openId="+openId;
+		}else if(htmlFlag == 6) {
+			window.location.href="../wechat/apply_manage?taskStatus=1&openId="+openId;
+		} else if(htmlFlag == 7 && status == 1) {
+			window.location.href="../wechat/apply_manage?taskStatus=1&openId="+openId;
+		} else if(htmlFlag == 7) {
+			window.location.href="../wechat/apply_manage?taskStatus=3&openId="+openId;
+		} else if(htmlFlag == 8 && status == 1){
+			window.location.href="../wechat/apply_manage?taskStatus=1&openId="+openId;
+		}else if(htmlFlag == 8 && status == 3){
+			window.location.href="../wechat/apply_manage?taskStatus=3&openId="+openId;
+		}else if(htmlFlag == 4){
+            window.location.href="../wechat/apply_manage?openId="+openId;
+        }else {
+            window.location.href="../wechat/main?openId="+openId;
+        }*/
+        if(htmlFlag == 6 && status == 2) {
+            param = {openId:openId,taskStatus:2,method:'apply_manage'};
+            redirect(param);
+        }else if(htmlFlag == 6) {
+            param = {openId:openId,taskStatus:1,method:'apply_manage'};
+            redirect(param);
+        } else if(htmlFlag == 7 && status == 1) {
+            param = {openId:openId,taskStatus:1,method:'apply_manage'};
+            redirect(param);
+        } else if(htmlFlag == 7) {
+            param = {openId:openId,taskStatus:3,method:'apply_manage'};
+            redirect(param);
+        } else if(htmlFlag == 8 && status == 1){
+            param = {openId:openId,taskStatus:1,method:'apply_manage'};
+            redirect(param);
+        }else if(htmlFlag == 8 && status == 3){
+            param = {openId:openId,taskStatus:3,method:'apply_manage'};
+            redirect(param);
+        }else if(htmlFlag == 4){
+            param = {openId:openId,method:'apply_manage'};
+            redirect(param);
+        }else {
+            param = {openId:openId,method:'main'};
+            redirect(param);
+        }
+	}
+	
+	function getUrlParms(name){
+		var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r!=null){
+			return unescape(r[2]);
+		}
+		return null;
+	}
+	</script>
+</body>
+</html>

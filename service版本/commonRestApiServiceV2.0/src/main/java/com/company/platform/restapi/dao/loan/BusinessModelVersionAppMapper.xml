@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.BusinessModelVersionAppMapper">
+	
+	<select id="getModelIdByCodeAndVersion" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		
+		SELECT 
+			id 
+		FROM 
+			v_model_business 
+		WHERE 
+			code=#{code, jdbcType=VARCHAR} 
+		AND 
+			version=#{version, jdbcType=VARCHAR}
+			
+	</select>
+	
+	
+	<select id="getRecordIdByModelIdAndBusinessId" resultType="java.util.Map"
+		parameterType="java.lang.String">
+	
+		SELECT 
+			id, 
+			createDate, 
+			functionExplain, 
+			busmodId, 
+			businessId
+		FROM 
+			v_model_business_record 
+		WHERE 
+			 businessId = #{businessId, jdbcType=VARCHAR}
+		AND 
+			busmodId = #{busmodId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findRecordById" resultType="java.util.Map" parameterType="java.lang.String">
+		
+		SELECT 
+			id, 
+			businessId, 
+			busmodId, 
+			createDate, 
+			functionExplain 
+		FROM 
+			v_model_business_record 
+		WHERE 
+			id = #{id, jdbcType=VARCHAR}
+			
+	</select>
+	
+	<select id="findParamsLogicByModelId" resultType="java.util.Map" parameterType="java.lang.String">
+		SELECT
+			mc.code,
+			mc.inputType
+		FROM
+		 	v_model_column mc,
+		  	v_model_title mt
+		WHERE
+		 	mc.titleId = mt.id
+		AND mt.modelId = #{modelId}
+		ORDER BY mt.sort, mc.sort
+	</select>
+	
+	<update id="updateModelData" parameterType="java.lang.String">
+	
+		UPDATE 
+			v_model_business_data 
+		SET 
+			busVal = #{data, jdbcType=VARCHAR} 
+		WHERE 
+			recordId = #{recordId, jdbcType=VARCHAR} 
+		AND 
+			busCode = #{code, jdbcType=VARCHAR}
+	
+	</update>
+	
+	<insert id="saveModelRecord" parameterType="java.lang.String">
+	
+		INSERT INTO 
+			v_model_business_record
+		(
+			id, 
+			businessId, 
+			busmodId, 
+			createDate, 
+			functionExplain
+		) 
+		values
+		(
+			#{id, jdbcType=VARCHAR}, 
+			#{businessId, jdbcType=VARCHAR}, 
+			#{busmodId, jdbcType=VARCHAR}, 
+			#{createDate, jdbcType=TIMESTAMP}, 
+			#{functionExplain, jdbcType=VARCHAR}
+		)
+	
+	</insert>
+	
+	<select id="findParamsByModelId" resultType="java.util.Map"
+		parameterType="java.lang.String">
+		
+		SELECT 
+			mc.code, 
+			mc.inputType
+		FROM 
+			v_model_column mc, 
+			v_model_title mt
+		WHERE 
+			mc.titleId = mt.id 
+		AND 
+			mt.modelId = #{modelId, jdbcType=VARCHAR} 
+		ORDER BY mt.sort, mc.sort
+
+	</select>
+	
+	<insert id="saveModelData" parameterType="java.lang.String">
+		INSERT INTO
+			v_model_business_data
+		(
+			id,
+		 	recordId,
+		  	inputType,
+		   	busCode,
+		    busVal
+		) 
+		values
+		(
+		    UUID(), 
+		    #{recordId, jdbcType=VARCHAR}, 
+		    #{inputType, jdbcType=VARCHAR}, 
+		    #{code, jdbcType=VARCHAR}, 
+		    #{data, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+</mapper>

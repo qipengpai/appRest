@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">     
+<meta content="black" name="apple-mobile-web-app-status-bar-style">     
+<meta content="telephone=no" name="format-detection">
+<title>PICC金融风控决策系统</title>
+<link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"></link>
+</head>
+
+<body>
+	<div class="main login">
+		<div class="loading2">
+			<img th:src="@{/img/loading3.gif}" alt="">
+			<span>系统正在加载</span>
+		</div>
+	</div>
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<script th:src="@{/js/jquery.cookie.js}"></script>
+	<script th:src="@{/js/global.js}"></script>
+	<script th:src="@{/js/json.js}"></script>
+	<script th:src="@{/js/weixin.js}"></script>
+	<script th:src="@{/js/redirect.js}"></script>
+  	<script type="text/javascript">
+ 	var openId,code;
+    var param={};
+	$(function(){
+		 $.getUrlParam = function (name) {
+		        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+		        var r = window.location.search.substr(1).match(reg);
+		        if (r != null) return unescape(r[2]); return null;
+		    }
+        openId = $.getUrlParam("openId");
+
+        setTimeout(function(){
+            //alert(openId);
+            $.zkbr.ajax({
+                url: "../wechat/getStatusByOpenId",
+                type:"post",
+                dataType:"json",
+                data:{"openId":openId},
+                success:function(data){
+                    if(data.status==200)
+                    {
+                        //alert(data.userStatus);
+                        //openId = data.openId;
+                        $.cookie('openId', openId);
+                        if(data.userStatus==true)
+                        {
+                            //window.location.href="../wechat/main?openId="+openId;
+                            param = {openId:openId,method:'main'};
+                            redirect(param);
+                        }else
+                        {
+                            window.location.href="../wechat/login?openId="+openId;
+                            param = {openId:openId,method:'login'};
+                            redirect(param);
+                        }
+                    }
+                }
+            });
+		},1000);
+
+		//code = $.getUrlParam("code");
+
+ 		/*$.zkbr.ajax({
+		  	url: "../wechat/getWechatOpenId",
+		  	type:"post",
+		  	dataType:"json",
+		  	data:{"code":code,"openId":openId},
+		  	success:function(data){
+				 if(data.status==200)
+				 {
+					openId = data.openId;
+					$.cookie('openId', openId);
+ 					if(data.userStatus==true)
+					{
+						window.location.href="../wechat/main?openId="+openId;
+ 					}else
+ 					{
+ 						window.location.href="../wechat/login?openId="+openId;
+ 					}
+				 }
+ 		  	}
+		});*/
+	});
+	
+	
+ 	</script>
+</body>
+</html>

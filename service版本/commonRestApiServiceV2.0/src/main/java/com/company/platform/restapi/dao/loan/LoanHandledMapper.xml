@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.LoanHandledMapper">
+	<select id="getLoanHandledInfoByUserId" resultType="com.company.platform.restapi.model.loan.LoanProductApplySyno"
+		parameterType="java.lang.String">
+		SELECT
+			lpa.id loanProductApplyId,
+			lpa.`code` intoPieceNo,
+			lp.`name` productName,
+			DATE_FORMAT(
+				lpa.applyTime,
+				'%Y-%m-%d %H:%i:%s'
+			) applyTime,
+			lpa.applyAmount,
+			lpa.termCount,
+			lpa.termUnit,
+			lpa.intoPieceType,
+			cp.customerName,
+			CASE cp.eType
+			WHEN '0' THEN
+				cci.contact
+			ELSE
+				corp.lrMobile
+			END customerPhone,
+			 CASE cp.eType
+			WHEN '0' THEN
+				CONCAT(
+					IFNULL(cli.provinceName, ''),
+					IFNULL(cli.cityName, ''),
+					IFNULL(cli.countyName, ''),
+					IFNULL(cli.address, '')
+				)
+			ELSE
+				CONCAT(
+					IFNULL(cli_corp.provinceName, ''),
+					IFNULL(cli_corp.cityName, ''),
+					IFNULL(cli_corp.countyName, ''),
+					IFNULL(cli_corp.address, '')
+				)
+			END customerAddress,
+			ae.busType workflowBusType
+		FROM
+			loan_product_apply lpa
+		INNER JOIN loan_product lp ON lpa.loanProductId = lp.id
+		INNER JOIN customer_public cp ON lpa.customerId = cp.id
+		INNER JOIN (select DISTINCT x.ID_, x.BUSINESS_KEY_, x.PROC_DEF_ID_ from act_hi_procinst x, act_hi_taskinst y where y.ASSIGNEE_ = #{userId, jdbcType=VARCHAR} and y.end_time_ is not null and y.execution_id_ = x.ID_) at ON at.BUSINESS_KEY_ = lpa.id
+		LEFT JOIN (select customerId, max(contact) contact from customer_contact_info where eType = 'pMobile' and isValid = 1 group by customerId) cci ON cp.id = cci.customerId
+		LEFT JOIN customer_location_info cli ON cp.id = cli.customerId
+		AND cli.eType = 'live'
+		LEFT JOIN customer_location_info cli_corp ON cp.id = cli_corp.customerId
+		AND cli_corp.eType = 'business'
+		LEFT JOIN corporation_info corp on corp.id = cp.id
+		LEFT JOIN act_extension ae ON at.PROC_DEF_ID_ = ae.wfId
+		order by lpa.applyTime desc, lpa.id
+	</select>
+	
+	<select id="getLoanHandledInfoByUserIdNew" resultType="com.company.platform.restapi.model.loan.LoanProductApplySyno" parameterType="java.lang.String">
+		select 
+			c.loanProductApplyId,
+			c.intoPieceNo,
+			c. productName,
+			c.applyTime,
+			c.applyAmount,
+			c.termCount,
+			c.termUnit,
+			c.customerId,
+			c.intoPieceType,
+			c.customerName,	
+			c.customerAddress ,
+			c.customerPhone,
+			c.loan workflowBusType 
+		from 
+			(select b.* ,CASE b.eType when '0' THEN cci.contact else corp.lrMobile END customerPhone, at.PROC_DEF_ID_ ,at.end_time_ from 
+			(select * from 
+			(select lpa.id loanProductApplyId,
+				lpa.`code` intoPieceNo,
+				lp.`name` productName,
+				DATE_FORMAT(
+					lpa.applyTime,
+					'%Y-%m-%d %H:%i:%s'
+				) applyTime,
+				lpa.applyAmount,
+				lpa.termCount,
+				lpa.termUnit,
+				lpa.customerId,
+				lpa.intoPieceType,
+				cp.customerName,
+				cp.eType,	
+				CASE cp.eType
+				WHEN '0' THEN
+					CONCAT(
+						IFNULL(cli.provinceName, ''),
+						IFNULL(cli.cityName, ''),
+						IFNULL(cli.countyName,''),
+						IFNULL(cli.address, '')
+					)
+				ELSE
+					CONCAT(
+						IFNULL(cli_corp.provinceName, ''),
+						IFNULL(cli_corp.cityName, ''),
+						IFNULL(cli_corp.countyName, ''),
+						IFNULL(cli_corp.address, '')
+					)
+				END customerAddress,
+				'loan'
+				from loan_product_apply  lpa 
+	    	INNER JOIN loan_product lp ON lpa.loanProductId = lp.id
+			INNER JOIN customer_public cp ON lpa.customerId = cp.id
+			LEFT JOIN customer_location_info cli ON cp.id = cli.customerId
+			AND cli.eType = 'live'
+			LEFT JOIN customer_location_info cli_corp ON cp.id = cli_corp.customerId
+			AND cli_corp.eType = 'business') a where a.loanProductApplyId in 
+			(select DISTINCT x.BUSINESS_KEY_ from act_hi_procinst x, act_hi_taskinst y where y.ASSIGNEE_ = #{userId, jdbcType=VARCHAR} and y.end_time_ is not null and y.execution_id_ = x.ID_)
+		) b 
+		LEFT JOIN (select customerId, max(contact) contact from customer_contact_info where eType = 'pMobile' and isValid = 1 group by customerId) cci ON b.customerId = cci.customerId 
+		LEFT JOIN corporation_info corp on corp.id = b.customerId 
+		left JOIN (select max(y.end_time_) end_time_, x.ID_, x.BUSINESS_KEY_, x.PROC_DEF_ID_ from act_hi_procinst x, act_hi_taskinst y where y.ASSIGNEE_ = #{userId, jdbcType=VARCHAR} and y.end_time_ is not null and y.execution_id_ = x.ID_) at ON at.BUSINESS_KEY_ = b.loanProductApplyId) c
+		order by c.end_time_ desc, c.applyTime desc, c.loanProductApplyId
+	</select>	
+</mapper>

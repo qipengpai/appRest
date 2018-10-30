@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.ProductInfoMapper">
+	<select id="queryByPrimaryId"  resultType="com.company.platform.restapi.model.loan.LoanProductInfo"
+		parameterType="java.lang.String"> 
+		
+		SELECT
+			id,
+			name,
+			code,
+			loanCodeType,
+			productType,
+			loanType,
+			amountLimitType,
+			singleMinAmount,
+			singleMaxAmount,
+			singleAmounts,
+			singleDefaultAmount,
+			interestRateLimitType,
+			minInterestRate,
+			maxInterestRate,
+			interestRates,
+			defaultInterestRate,
+			description,
+			detailDescription,
+			status,
+			effectiveDate,
+			termUnit,
+			repayType,
+			daysLimitType,
+			singleMinDays,
+			singleMaxDays,
+			singleDays,
+			singleDefaultDays,
+			monthsLimitType,
+			singleMinMonths,
+			singleMaxMonths,
+			singleMonths,
+			singleDefaultMonths,
+			repayTermUnit,
+			defaultRepayTermCount,
+			defaultRepayTermUnit,
+			repayDate,
+			penaltyRateLimitType,
+			minPenaltyRate,
+			maxPenaltyRate,
+			penaltyRates,
+			defaultPenaltyRate,
+			penaltyCalculationBasic,
+			guaranteeType,
+			isDailyInterestRate,
+			procdefKey,
+			extensionProcdefKey,
+			operDate,
+			userId,
+			viewState,
+			useCreditQuota,
+			supportCommitProc,
+			defaultOrgId,
+			defaultAccountManagerId,
+			maxExtensionCount,
+			downPaymentsLimitType,
+			minDownPayments,
+			maxDownPayments,
+			downPayments,
+			defaultDownPayments,
+			downPaymentsEnable,
+			DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') productInfoUpdateTime
+		FROM
+			loan_product
+		WHERE
+			id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectLoanProductFeeConditionsByLoanProductId"  resultType="java.util.HashMap"
+		parameterType="java.lang.String"> 
+		
+		SELECT 
+			c.*,
+			fee.code,
+			fee.name,
+			fee.feeType,
+			fee.chargeType,
+			fee.amountType,
+			fee.chargeCondition,
+			fee.feeMode,
+			fee.feeAmount,
+			fee.calculationBasic,
+			fee.feeRate,
+			fee.operDate,
+			fee.userId,
+			fee.status 
+		FROM 
+			loan_product_fee_condition c 
+		JOIN
+			loan_product_fee fee
+		ON 
+			c.loanProductId = #{id,jdbcType=VARCHAR}
+		AND 
+			c.feeId=fee.id 
+		ORDER BY orderNum ASC
+	</select>	
+	
+	<select id="getLoanProductApplyById"  resultType="com.company.platform.restapi.model.loan.offToOnline.LoanProductApplyEntity"
+		parameterType="java.lang.String"> 
+		SELECT
+			id,
+			loanProductId,
+			applyAmount,
+			termCount,
+			termUnit,
+			repayTermCount,
+			repayTermUnit,
+			repayType,
+			applyTime,
+			interestRate,
+			penaltyRate,
+			guaranteeType,
+			useType,
+			intoPieceType,
+			ownContract,
+			accountManagerId,
+			registerId,
+			registerTime,
+			loanAccount,
+			loanCardNo,
+			loanBank,
+			loanOrg,
+			repaymentAccount,
+			repaymentCardNo,
+			repaymentBank,
+			repaymentOrg,
+			supplementMsg,
+			merchantState,
+			merchantId,
+			merchantChargeType,
+			merchantChargeRate,
+			merchantChargeAmount,
+			replyMerchantChargeRate,
+			replyMerchantChargeAmount,
+			DATE_FORMAT(updateTime,'%Y-%m-%d %H:%i:%s') updateTime,
+			code,
+			customerId,
+			orgId,
+			downPaymentsAmount
+		FROM
+			loan_product_apply
+		WHERE
+			id = #{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getLoanProductRule" resultType="java.util.Map"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			loanProductId,
+			ruleType,
+			ruleClassId
+		FROM
+			loan_product_rule_v
+		WHERE
+			loanProductId = #{loanProductId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getRepayType" resultType="java.util.Map">
+		select `code`, `name`, `rangeCode`,`sort` from data_range_item where rangeCode = 'repayType' and isUsed = '1' ORDER BY sort ASC
+	</select>
+</mapper>

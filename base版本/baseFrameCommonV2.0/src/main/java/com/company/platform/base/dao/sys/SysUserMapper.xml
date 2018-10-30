@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.base.dao.sys.SysUserMapper">
+	<select id="queryStaffDetailByids" resultType="java.util.HashMap">
+	  select u.userName, i.realName, i.gender, i.birthday, i.mobile, i.userId, rel.orgId from sys_user u left join sys_user_info i on u.id = i.userId left join user_dept_rel rel on u.id = rel.userId where u.id in
+	  <foreach item="item" index="index" collection="userStrs"
+	      open="(" separator="," close=")">
+	        #{item}
+	  </foreach>
+	</select>
+	
+	<select id="queryUsersByOrgsAndRoles" resultType="java.util.HashMap">
+		select sr.roleName, urr.roleId, urr.userId, su.userName, i.realName, org.orgName
+		 from sys_role sr join user_role_rel urr on sr.id = urr.roleId join sys_user su on su.id = urr.userId join sys_user_info i on su.id = i.userId
+		 join user_dept_rel r on su.id = r.userId join organization org on org.id = r.orgId
+		 where urr.roleId in
+		 <foreach item="item" index="index" collection="roleStrs"
+		      open="(" separator="," close=")">
+		        #{item}
+		 </foreach>
+		 and org.id in
+		 <foreach item="item" index="index" collection="orgIds"
+		      open="(" separator="," close=")">
+		        #{item}
+		 </foreach>
+	</select>
+	
+	<select id="queryUsersByOrgsAndPosts" resultType="java.util.HashMap">
+		select u.id userId, u.userName, ui.realName, p.id postId, p.posterName, o.id orgId, o.orgName
+		 from sys_user u, sys_user_info ui, user_poster_rel pr, sys_poster p, user_dept_rel dr, organization o
+		 where u.id = ui.userId and u.id = pr.userId and pr.posterId = p.id and u.id = dr.userId and dr.orgId = o.id
+		 and o.id in
+		 <foreach item="item" index="index" collection="orgIds"
+		      open="(" separator="," close=")">
+		        #{item}
+		 </foreach>
+		 and p.id in
+		 <foreach item="item" index="index" collection="posterStrs"
+		      open="(" separator="," close=")">
+		        #{item}
+		 </foreach>
+	</select>
+	
+	<select id="getUserInfoById" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select u.userName, i.realName, i.gender, i.birthday, i.mobile, i.userId, rel.orgId from sys_user u left join sys_user_info i on u.id = i.userId left join user_dept_rel rel on u.id = rel.userId where u.id = #{id}
+	</select>
+	
+	<update id="upUserOpenId" parameterType="java.lang.String">
+	     update sys_user set openId=#{openId} where userName = #{userName}
+	</update>
+
+	<!--清除openId-->
+	<update id="setUserInfoByOpenId" parameterType="java.lang.String">
+	     update sys_user set openId = null where openId = #{openId}
+	</update>
+</mapper>

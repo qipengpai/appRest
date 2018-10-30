@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.guarantor.GuarantorInfoMapper">
+	
+	<select id="showGuarantorInByApplyId" resultType="com.company.platform.restapi.model.guarantor.GuarantorInfo"
+		parameterType="java.lang.String">
+		SELECT
+			g.id,
+			g.`name`,
+			g.credentialType,
+			g.credentialNo,
+			l.relationship,
+			l.mobile,
+			l.address,
+			l.company,
+			l.typeOfGuarantor,
+			l.duty,
+			l.income
+		FROM
+			guarantor_info g
+		JOIN loan_product_apply_guarantor l
+		  ON l.loanProductApplyId = #{applyId, jdbcType=VARCHAR}
+		 AND l.guarantorId = g.id
+		 AND l.guarantorType = 0
+	</select>
+	
+	<delete id="deleteLoanProductApplyGuarantor" parameterType="java.lang.String">
+		delete
+		from
+			loan_product_apply_guarantor
+		where guarantorType = 0
+		and loanProductApplyId = #{applyId, jdbcType=VARCHAR}
+	</delete>
+	
+	<select id="selectGuarantorInfoIds" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT
+			GROUP_CONCAT("'",guarantorId, "'") ids
+		FROM
+			loan_product_apply_guarantor
+		WHERE loanProductApplyId = #{applyId, jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteGuarantorInfo" parameterType="java.lang.String">
+		delete
+		from
+			guarantor_info
+		where
+			id in (#{ids, jdbcType=VARCHAR})
+	</delete>
+	
+	<insert id="insertGuarantorInfo" parameterType="com.company.platform.restapi.model.guarantor.GuarantorInfo">
+		insert into
+			guarantor_info
+		(
+			id,
+			name,
+			credentialType,
+			credentialNo
+		)
+		values
+		(
+			#{id, jdbcType=VARCHAR},
+			#{name, jdbcType=VARCHAR},
+			#{credentialType, jdbcType=VARCHAR},
+			#{credentialNo, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<insert id="insertLoanProductApplyGuarantor" parameterType="java.lang.String">
+		insert into
+			loan_product_apply_guarantor
+		(
+			id,
+			loanProductApplyId,
+			guarantorId,
+			relationship,
+			mobile,
+			address,
+			company,
+			typeOfGuarantor,
+			guarantorType,
+			duty,
+			income
+		)
+		values
+		(
+			UUID(),
+			#{applyId, jdbcType=VARCHAR},
+			#{guarantor.id, jdbcType=VARCHAR},
+			#{guarantor.relationship, jdbcType=VARCHAR},
+			#{guarantor.mobile, jdbcType=VARCHAR},
+			#{guarantor.address, jdbcType=VARCHAR},
+			#{guarantor.company, jdbcType=VARCHAR},
+			#{guarantor.typeOfGuarantor, jdbcType=VARCHAR},
+			0,
+			#{guarantor.duty, jdbcType=VARCHAR},
+			#{guarantor.income, jdbcType=VARCHAR}
+		)
+	</insert>
+</mapper>

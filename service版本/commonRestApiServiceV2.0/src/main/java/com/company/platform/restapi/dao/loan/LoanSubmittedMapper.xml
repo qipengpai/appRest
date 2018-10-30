@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.LoanSubmittedMapper">
+	<select id="getLoanSubmittedInfoByUserId" resultType="com.company.platform.restapi.model.loan.LoanProductApplySubmit"
+		parameterType="java.lang.String">
+		SELECT
+			lpa.id loanProductApplyId,
+			lpa.`code` intoPieceNo,
+			lp.`name` productName,
+			DATE_FORMAT(
+				lpa.applyTime,
+				'%Y-%m-%d %H:%i:%s'
+			) applyTime,
+			lpa.applyAmount,
+			lpa.termCount,
+			lpa.termUnit,
+			lpa.intoPieceType,lpa.actionStatus,lpa.status,lpa.replyAmount,lpa.authTermCount,lpa.authTermUnit,
+			cp.customerName,
+			cp.credentialNo,
+			CASE cp.eType
+			WHEN '0' THEN
+				cci.contact
+			ELSE
+				corp.lrMobile
+			END customerPhone,
+			CONCAT(
+				cli.provinceName,
+				cli.cityName,
+				cli.address
+			) customerAddress,
+			ae.busType workflowBusType
+		FROM
+			loan_product_apply lpa
+		INNER JOIN loan_product lp ON lpa.loanProductId = lp.id and lpa.status != 0
+		INNER JOIN customer_public cp ON lpa.customerId = cp.id
+		INNER JOIN (select DISTINCT ID_, BUSINESS_KEY_, PROC_DEF_ID_ from act_hi_procinst) at ON at.BUSINESS_KEY_ = lpa.id
+	
+		LEFT JOIN customer_contact_info cci ON cp.id = cci.customerId
+		AND cci.eType = 'pMobile' and cci.isValid = 1
+		LEFT JOIN customer_location_info cli ON cp.id = cli.customerId
+		AND cli.eType = 'live'
+		LEFT JOIN corporation_info corp on corp.id = cp.id 
+		LEFT JOIN act_extension ae ON at.PROC_DEF_ID_ = ae.wfId
+		WHERE
+			lpa.registerId = #{userId, jdbcType=VARCHAR} 
+			AND lpa.status > 0 
+			<if test="customerName!=null and customerName!=''">
+				and cp.customerName =  #{customerName, jdbcType=VARCHAR}
+			</if>
+			<if test="credentialNo!=null and credentialNo!=''">
+				and cp.credentialNo = #{credentialNo, jdbcType=VARCHAR}
+			</if>
+			<if test="applyTimeStart!=null and applyTimeStart!=''">
+				and DATE_FORMAT(lpa.applyTime, '%Y-%m-%d') &gt;= #{applyTimeStart, jdbcType=VARCHAR}
+			</if>
+			<if test="applyTimeEnd!=null and applyTimeEnd!=''">
+				and DATE_FORMAT(lpa.applyTime, '%Y-%m-%d') &lt;= #{applyTimeEnd, jdbcType=VARCHAR}
+			</if>
+		order by lpa.applyTime desc
+	</select>
+</mapper>

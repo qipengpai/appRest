@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.LoanTaskBuilderMapper">
+	<select id="findHandlersByApplyId" parameterType="java.lang.String" 
+		resultType="java.util.HashMap">
+		select 
+			userId, 
+			userPost, 
+			STATUS 
+		from 
+			loan_after_user
+		where 
+			loanProductApplyId = #{applyId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findProductInfoById" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		select
+			remindNum,
+			beforeDay 
+		from 
+			loan_product_extend
+		where 
+			loanProductId = #{applyId, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="addLoanCheckedApplyInfo" parameterType="java.lang.String">
+		insert into
+			loaned_check_apply_info
+			(
+				id,
+			 	loanAppId,
+				status,
+			 	startTime
+			 )
+		values
+			(
+				UUID(),
+				#{applyId, jdbcType=VARCHAR},
+				0,
+				SYSDATE()
+			)
+	</insert>
+	
+	<insert id="createLoanCheckedTask">
+		insert into 
+			loaned_check_task
+			(
+				id,
+				handler, 
+				taskType, 
+				createTime, 
+				reqComTime, 
+				completeTime, 
+				taskRequire, 
+				status, 
+				appId, 
+				orgId
+			)
+		values
+			(
+				#{id, jdbcType=VARCHAR}, 
+				#{handler, jdbcType=VARCHAR}, 
+				#{taskType, jdbcType=VARCHAR}, 
+				#{createTime, jdbcType=VARCHAR}, 
+				#{reqComTime, jdbcType=VARCHAR}, 
+				#{completeTime, jdbcType=VARCHAR}, 
+				#{taskRequire, jdbcType=VARCHAR}, 
+				#{status, jdbcType=VARCHAR}, 
+				#{appId, jdbcType=VARCHAR}, 
+				#{orgId, jdbcType=VARCHAR}
+			)
+	</insert>
+</mapper>

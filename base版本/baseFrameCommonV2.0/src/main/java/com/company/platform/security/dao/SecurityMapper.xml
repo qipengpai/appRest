@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.security.dao.SecurityMapper">
+	<select id="findByUserName" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT
+			a.id id,
+			a.userName userName,
+			a.`passWord` passWord,
+			a.nickName nickName,
+			a.isValid isValid,
+			b.realName realName,
+			b.gender gender,
+			b.birthday birthday,
+			b.officePhone officePhone,
+			b.mobile mobile,
+			b.email email,
+			b.noticeConfigure noticeConfigure,
+			a.openId
+		FROM
+			sys_user a
+		LEFT JOIN sys_user_info b ON a.id = b.userId
+		WHERE
+			a.username = #{username}
+	</select>
+	
+	<select id="findRoleByUserId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT
+			role.id id,
+			role.roleCode roleCode,
+			role.roleName roleName,
+			role.eDesc roleDesc,
+			role.type roleType
+		FROM
+			sys_role role,
+			user_role_rel roleRel
+		WHERE
+			role.id = roleRel.roleId
+		AND role.isValid = 1
+		AND roleRel.userId = #{id}
+	</select>
+	
+	<select id="findResourceByRoleId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT
+			res.id id ,
+			res.resourceCode resourceCode ,
+			res.resourceName resourceName ,
+			res.url url ,
+			res.pid pid ,
+			res.method method ,
+			res.categoryCode categoryCode,
+			res.rSort rSort,
+			res.rLevel rLevel,
+			res.resourceIcon resourceIcon,
+			res.isLeaf isLeaf,
+			rel.roleId roleId
+		FROM
+			sysResource res ,
+			sysRoleResourceRel rel
+		WHERE
+			res.id = rel.resourceId
+		AND
+			res.isValid = 0
+		AND
+			rel.roleId = #{roleId}
+	</select>
+	
+	<select id="findOrgByUserId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT
+			org.id id,
+			org.orgName orgName,
+			org.orgCode orgCode,
+			org.pid pid,
+			org.eLevel eLevel,
+			org.isLeaf isLeaf,
+			org.eSort eSort,
+			org.eType eType
+		FROM
+			organization org,
+			user_dept_rel orgRel
+		WHERE
+			org.id = orgRel.orgId
+		AND org.isValid = 1
+		AND orgRel.userId = #{id}
+	</select>
+	
+	<select id="findPosterByUserId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT
+			poster.id id,
+			poster.posterCode posterCode,
+			poster.posterName posterName
+		FROM
+			sys_poster poster,
+			user_poster_rel posterRel
+		WHERE
+			poster.id = posterRel.posterId
+		AND poster.isValid = 1
+		AND posterRel.userId = #{id}
+	</select>
+	
+	
+		<select id="getUser" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT
+			*
+		FROM
+		sys_user
+		
+		where openId=#{openId} limit 0,1
+	</select>
+	
+	<select id="getRoleTypeByUserId" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT
+			type
+		FROM
+			sys_role role
+		WHERE
+			id = (select roleId from user_role_rel where userId = #{userId})
+	</select>
+</mapper>

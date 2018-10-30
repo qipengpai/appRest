@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.LoanTempMapper">
+	<select id="getLoanProductApplySynosByUserId"
+		resultType="com.company.platform.restapi.model.loan.LoanProductApplySyno"
+		parameterType="java.lang.String">
+		SELECT
+		lpa.id loanProductApplyId,
+		lpa.`code` intoPieceNo,
+		lp.`name` productName,
+		DATE_FORMAT(
+		lpa.applyTime,
+		'%Y-%m-%d %H:%i:%s'
+		) applyTime,
+		lpa.commitTime,
+		lpa.applyAmount,
+		lpa.termCount,
+		lpa.termUnit,
+		lpa.intoPieceType,
+		cp.customerName,
+		cci.contact customerPhone,
+		CONCAT(cli.provinceName, cli.cityName, cli.address) customerAddress,
+		lpa.status
+		FROM
+		loan_product_apply lpa
+		INNER JOIN loan_product lp
+		on lpa.loanProductId = lp.id
+		INNER JOIN customer_public cp
+		on lpa.customerId = cp.id
+		LEFT JOIN (select customerId, GROUP_CONCAT(contact) contact from customer_contact_info where isValid = 1 AND eType = 'pMobile' group by customerId) cci
+		on cp.id = cci.customerId
+		LEFT JOIN customer_location_info cli
+		on cp.id = cli.customerId AND cli.eType = 'live'
+		WHERE
+		lpa.`status` = 0 and lpa.registerId = #{userId, jdbcType=VARCHAR}
+		order by
+		lpa.applyTime desc, lpa.id
+	</select>
+	
+	<select id="getLoanApplyinfo"
+		resultType="com.company.platform.restapi.model.loan.handled.LoanProductApplyInfo"
+		parameterType="java.lang.String">
+		SELECT
+			lpa.id,
+			lpa.loanProductId,
+			lp.name loanProductName,
+			lpa.customerId,
+			lpa.CODE,
+			lpa.applyAmount,
+			lpa.replyAmount,
+			lpa.termCount,
+			lpa.termUnit,
+			lpa.authTermCount,
+			lpa.authTermUnit,
+			lpa.repayTermCount,
+			lpa.repayTermUnit,
+			lpa.repayType,
+			DATE_FORMAT(
+			lpa.applyTime,
+			'%Y-%m-%d %H:%i:%s'
+			) applyTime,
+			lpa.interestRate,
+			lpa.penaltyRate,
+			lpa.guaranteeType,
+			lpa.useType,
+			lpa.intoPieceType,
+			lpa.ownContract,
+			lpa.status,
+			lpa.actionStatus,
+			lpa.accountManagerId,
+			sui1.realName accountManagerName,
+			lpa.registerId,
+			sui2.realName registerName,
+			DATE_FORMAT(
+			lpa.registerTime,
+			'%Y-%m-%d %H:%i:%s'
+			) registerTime,
+			lpa.intoPieceNo,
+			lpa.loanAccount,
+			lpa.loanCardNo,
+			lpa.loanBank,
+			lpa.loanOrg,
+			lpa.repaymentAccount,
+			lpa.repaymentCardNo,
+			lpa.repaymentBank,
+			lpa.repaymentOrg,
+			lpa.supplementMsg,
+			lpa.merchantState,
+			lpa.merchantId,
+			lpa.merchantChargeType,
+			lpa.merchantChargeRate,
+			lpa.merchantChargeAmount,
+			lpa.replyMerchantChargeRate,
+			lpa.replyMerchantChargeAmount,
+			lpa.downPaymentsAmount,
+			DATE_FORMAT(
+			lpa.updateTime,
+			'%Y-%m-%d %H:%i:%s'
+			) updateTime,
+			monthlyPayments
+		FROM loan_product_apply lpa
+		LEFT JOIN sys_user_info sui1
+		ON lpa.accountManagerId = sui1.userId
+		LEFT JOIN sys_user_info sui2
+		ON lpa.registerId = sui2.userId
+		LEFT JOIN loan_product lp
+		ON lp.id = lpa.loanProductId 
+		where lpa.id = #{loanProductApplyId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectImageInfoByBusinessId"
+		resultType="com.company.platform.restapi.model.loan.handled.ImageInfo"
+		parameterType="java.lang.String">
+		SELECT
+			m_data.id,
+			m_data.fileName,
+			m_data.filePath,
+			v_class.id classId
+		FROM
+			v_model_material_data m_data
+		LEFT JOIN v_model_material_record m_record ON m_data.recordId = m_record.id
+		LEFT JOIN v_model_img_doc_class v_class ON v_class.imgDocId = m_record.modelId
+		AND v_class.`code` = m_data.classCode
+		WHERE m_record.businessId = #{loanProductApplyId, jdbcType=VARCHAR}
+		ORDER BY
+			v_class.id,
+			m_data.uploadTime
+	</select>
+	
+	<select id="getImgRecordByBusId" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		select `id`, `createDate`, `functionExplain`, `modelId`, `businessId` from v_model_material_record where businessId = #{loanProductApplyId, jdbcType=VARCHAR} limit 0,1
+	</select>
+	
+	<select id="getLoanProcessTaskInfo" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		SELECT
+			res.ID_ taskId,
+			res.TASK_DEF_KEY_ taskKey,
+			exe.PROC_INST_ID_ processInstanceId
+		FROM
+			(
+				SELECT DISTINCT
+					RES.*
+				FROM
+					ACT_RU_TASK RES
+				WHERE
+					RES.ASSIGNEE_ = #{user, jdbcType=VARCHAR}
+				ORDER BY
+					RES.CREATE_TIME_ DESC
+			) res
+		LEFT JOIN
+			act_ru_execution exe ON res.PROC_INST_ID_ = exe.PROC_INST_ID_
+		LEFT JOIN act_extension ext ON exe.PROC_DEF_ID_ = ext.wfId
+		where
+			ext.busType='loan' 
+		and exe.BUSINESS_KEY_ = #{applyId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getOrgName"
+		resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT
+			t2.realName
+		FROM
+			loan_product_apply t1
+		INNER JOIN sys_user_info t2 ON t1.accountManagerId = t2.userId
+		WHERE t1.id = #{loanProductApplyId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getImgAndDocTitleInfoByModelId"
+		resultType="com.company.platform.restapi.model.modelmanager.ImgAndDocTitle"
+		parameterType="java.lang.String">
+		SELECT
+			id,
+			code,
+			name,
+			expl,
+			imgDocId,
+			sort,
+			floor,
+			size
+		FROM
+			v_model_img_doc_class
+		WHERE
+			imgDocId = #{imgDocId, jdbcType=VARCHAR}
+		ORDER BY
+			sort ASC
+	</select>
+	
+	<select id="findMaterialDataId"
+		resultType="java.lang.String"
+		parameterType="java.lang.String">
+		select id from v_model_material_record where modelId = #{modelId, jdbcType=VARCHAR} and businessId = #{businessId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="queryModelClass" resultType="com.company.platform.restapi.model.modelmanager.ImgAndDocTitle"
+		parameterType="java.lang.String">
+		select * from v_model_img_doc_class where id=#{classId, jdbcType=VARCHAR}
+		
+	</select>
+	
+	<select id="queryFilesData" resultType="java.util.Map" parameterType="java.lang.String">
+		select id, recordId, extension, modelCode, classCode, fileName, filePath from v_model_material_data where recordId = #{recordId, jdbcType=VARCHAR} and classCode = #{code, jdbcType=VARCHAR}
+	</select>
+</mapper>

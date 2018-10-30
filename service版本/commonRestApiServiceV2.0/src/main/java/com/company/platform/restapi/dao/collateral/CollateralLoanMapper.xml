@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.collateral.CollateralLoanMapper">
+	
+	<select id="getCollateralListByApplyId" resultType="com.company.platform.restapi.model.collateral.CollateralInfo"
+		parameterType="java.lang.String">
+			SELECT
+				d.id,
+				d.collateralNo,
+				d.collateralName,
+				d.collateralType,
+				d.warrantType,
+				d.customerName,
+				d.realName registerUserName,
+				date_format(d.registerTime,'%Y-%m-%d') registerTime,
+				d.esValue,
+				d.esValueSys,
+				org.orgName registerOrgName,
+				d.collateralStatus
+			FROM
+				(
+					SELECT
+						t.*,
+						i.realName,
+						c.customerName
+					FROM
+						collateral_warrant_info t
+					JOIN 
+						sys_user_info i
+					  ON t.collateralStatus = '1'
+					 AND t.deleteStatus = '0'
+					 AND t.registerStaffId = i.userId
+					<if test="list!=null">
+						and t.registerOrgId in 
+						<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		        			#{item}       
+		       			</foreach>
+					</if>
+					JOIN
+						customer_public c
+					  ON t.customerId = c.id
+					 AND NOT EXISTS (
+						SELECT
+							id
+						FROM
+							loan_collateral_rel t1
+						WHERE
+							t1.collateralId = t.id
+				)
+			UNION
+				SELECT
+					t.*,
+					i.realName,
+					c.customerName
+				FROM
+					collateral_warrant_info t
+				JOIN
+					sys_user_info i
+				  ON t.collateralStatus = '1'
+				 AND t.deleteStatus = '0'
+				 AND t.registerStaffId = i.userId
+				 <if test="list!=null">
+					and t.registerOrgId in 
+					<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+	        			#{item}       
+	       			</foreach>
+				 </if>
+				JOIN customer_public c
+				  ON t.customerId = c.id
+				 AND NOT EXISTS (
+					SELECT
+						*
+					FROM
+						(
+							SELECT
+								COUNT(*) num,
+								t1.collateralId
+							FROM
+								loan_collateral_rel t1
+							WHERE
+								t1.warrantStatus != '3'
+							GROUP BY
+								t1.collateralId
+						) t2
+					WHERE
+						t2.collateralId = t.id
+					AND t2.num > 0
+				)
+			) d
+			LEFT JOIN 
+				organization org
+			  on org.id = d.registerOrgId
+		where
+			d.customerId = #{customerId, jdbcType=VARCHAR}
+		ORDER BY
+			d.registerTime
+	</select>
+	
+	<insert id="insertLoanCollateralRel" parameterType="java.lang.String" >
+		INSERT INTO 
+			loan_collateral_rel 
+		(
+			id,
+			loanApplyId,
+			collateralId,
+			eOrder,
+			effTime,
+			mortgageAmount,
+			warrantStatus,
+			esValue,
+			collateralClass
+		) 
+		VALUES 
+		(
+			UUID(),
+			#{applyId, jdbcType=VARCHAR},
+			#{id, jdbcType=VARCHAR},
+			#{eOrder, jdbcType=VARCHAR},
+			NOW(),
+			#{esValue, jdbcType=VARCHAR},
+			0,
+			#{esValue, jdbcType=VARCHAR},
+			0
+		)
+	</insert>
+	
+	<select id="selectLoanApplyNextEOrder" parameterType="java.lang.String" resultType="java.lang.Short" >
+		SELECT
+			ifnull(max(eOrder), 0) + 1
+		FROM
+			loan_collateral_rel
+		WHERE
+			loanApplyId = #{applyId, jdbcType=VARCHAR}
+		and collateralClass=0
+	</select>
+	
+	<select id="getLoanCollateralInfo" parameterType="java.lang.String"
+		resultType="com.company.platform.restapi.model.collateral.CollateralInfo">
+		select
+			cw.id,
+			cw.collateralNo,
+			cw.collateralName,
+			cw.collateralType,
+			cw.warrantType,
+			cw.esValue,
+			cw.collateralStatus,
+			date_format(cw.registerTime,'%Y-%m-%d') registerTime,
+			cw.esValueSys,
+			org.orgName as registerOrgName,
+			u.realName as registerUserName,
+			customer.customerName
+		from 
+			collateral_warrant_info cw
+		left join 
+			sys_user_info u
+		  on cw.registerStaffId = u.userId
+		left join
+			organization org
+		  on cw.registerOrgId = org.id
+		left join
+			customer_public customer
+		  on customer.id = cw.customerId
+		where cw.id = #{id, jdbcType=VARCHAR}
+			
+	</select>
+	
+	<delete id="deleteLoanCollateralRel" parameterType="java.lang.String">
+		delete
+		from
+			loan_collateral_rel
+		where
+			collateralId = #{collateralId, jdbcType=VARCHAR}
+		and warrantStatus = 0
+	</delete>
+	
+	<select id="showCollateralListByApplyId" resultType="com.company.platform.restapi.model.collateral.CollateralInfo"
+		parameterType="java.lang.String">
+		SELECT
+			t2.id,
+			t2.collateralNo,
+			t2.collateralName,
+			t2.collateralType,
+			t2.warrantType,
+			t3.customerName,
+			t4.realName registerUserName,
+			t5.orgName registerOrgName,
+			date_format(t2.registerTime, '%Y-%m-%d') registerTime,
+			t1.esValue,
+			t2.collateralStatus,
+			t2.esValueSys
+		FROM
+			loan_collateral_rel t1
+		JOIN collateral_warrant_info t2
+		  ON t1.loanApplyId = #{applyId, jdbcType=VARCHAR}
+		AND t1.collateralClass = 0
+		AND t1.collateralId = t2.id
+		JOIN customer_public t3
+		  ON t2.customerId = t3.id
+		LEFT JOIN sys_user_info t4
+		  ON t2.registerStaffId = t4.userId
+		LEFT JOIN organization t5
+		  ON t2.registerOrgId = t5.id
+		ORDER BY
+			t1.eOrder ASC
+	</select>
+	
+	<select id="getEstimateTotalValue" resultType="java.math.BigDecimal"
+		parameterType="java.lang.String">
+		select
+			SUM(IFNULL(esValue,0)) esValue
+		from
+			loan_collateral_rel
+		where
+			loanApplyId = #{loanApplyId, jdbcType=VARCHAR}
+	</select>
+</mapper>

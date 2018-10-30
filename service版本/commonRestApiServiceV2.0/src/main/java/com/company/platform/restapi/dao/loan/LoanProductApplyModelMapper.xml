@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.LoanProductApplyModelMapper">
+	<insert id="saveLoanProductApplyModelV" parameterType="com.company.platform.restapi.model.loan.LoanProductApplyModelV">
+		insert into loan_product_apply_model_v(id, loanProductApplyId, modelType, modelCode, modelVersion, modelInstanceId) values(UUID(), #{loanProductApplyId, jdbcType=VARCHAR}, #{modelType, jdbcType=VARCHAR}, #{modelCode, jdbcType=VARCHAR}, #{modelVersion, jdbcType=VARCHAR}, #{modelInstanceId, jdbcType=VARCHAR})
+	</insert>
+	
+	<select id="getLoanProductApplyModelVInfo" resultType="com.company.platform.restapi.model.loan.LoanProductApplyModelV" parameterType="java.lang.String">
+		SELECT
+			id, 
+			loanProductApplyId, 
+			modelType,
+			modelCode,
+			modelVersion, 
+			modelInstanceId
+		FROM
+			loan_product_apply_model_v
+		WHERE
+			id = #{id, jdbcType=VARCHAR}
+			
+	</select>
+	
+</mapper>

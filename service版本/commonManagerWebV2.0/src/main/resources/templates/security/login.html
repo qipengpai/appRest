@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"></meta>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"></meta>
+<head th:include="include/quote" />
+<title>spring boot 框架</title>
+</head>
+<body class="hold-transition login-page">
+	<div class="login-box">
+		<div class="login-logo">
+			<a href=""><b>Sping boot</b>基础框架</a>
+		</div>
+		<!-- /.login-logo -->
+		<div class="login-box-body">
+			<p class="login-box-msg"></p>
+
+			<form name="form" th:action="@{/security/login}"  method="POST">
+				<div class="form-group has-feedback">
+					<input type="text" id="username" name="username" class="form-control" placeholder="请输入用户名"></input>
+					<span class="glyphicon glyphicon-user form-control-feedback"></span>
+				</div>
+				<div class="form-group has-feedback">
+					<input type="password" id="password" name="password" class="form-control" placeholder="请输入密码"></input>
+					<span class="glyphicon glyphicon-lock form-control-feedback"></span>
+				</div>
+				<div class="row">
+					<div class="col-xs-8">
+						<div class="checkbox icheck">
+							<label> <input type="checkbox"></input> Remember Me
+							</label>
+						</div>
+					</div>
+					<!-- /.col -->
+					<div class="col-xs-4">
+						<button type="submit" id="login" value="Login" class="btn btn-primary btn-block btn-flat">登陆</button>
+					</div>
+					<!-- /.col -->
+				</div>
+			</form>
+			<!-- /.social-auth-links -->
+		</div>
+		<!-- /.login-box-body -->
+	</div>
+<head th:include="include/footer" />
+<script>
+  $(function () {
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square-blue',
+      increaseArea: '20%' // optional
+    });
+  });
+</script>
+</body>
+</html>

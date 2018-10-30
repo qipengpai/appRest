@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.zkbr.platform.loan</groupId>
+		<artifactId>commonBaseFrame</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>baseFrameBoot</artifactId>
+	<packaging>jar</packaging>
+	<name>baseFrameBoot</name>
+	<dependencies>
+		<dependency>
+			<groupId>com.zkbr.platform.loan</groupId>
+			<artifactId>baseFrameCommon</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zkbr.platform.loan</groupId>
+			<artifactId>commonManagerService</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zkbr.platform.loan</groupId>
+			<artifactId>commonManagerWeb</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zkbr.platform.loan</groupId>
+			<artifactId>commonRestApIService</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.zkbr.platform.loan</groupId>
+			<artifactId>commonRestApIFacade</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<!-- 测试所需要的依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- Junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		
+		<dependency> 
+		<groupId>net.sourceforge.nekohtml</groupId> 
+		<artifactId>nekohtml</artifactId> 
+		<version>1.9.22</version> 
+		</dependency> 
+	</dependencies>
+	<build>
+		<finalName>loanBootV2</finalName> <!-- 指定package生成的文件名为loanBoot.jar -->
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>org.springframework</groupId>
+						<artifactId>springloaded</artifactId>
+						<version>1.2.5.RELEASE</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<mainClass>${start-class}</mainClass>
+					<jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<!-- 注释下面，生成不含依赖包的不可执行jar -->
+						<!-- <configuration> <classifier>exec</classifier> </configuration> -->
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

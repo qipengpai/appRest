@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.zkbr.platform.loan</groupId>
+	<artifactId>commonBaseFrame</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>commonBaseFrame</name>
+	<description>基础框架</description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.7.RELEASE</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<start-class>com.company.platform.BaseFrameBootApplication</start-class> <!-- 指定启动类（main方法的位置） -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.7</java.version>
+		<mybatis-spring-boot>1.3.0</mybatis-spring-boot>
+		<mysql-connector>5.1.38</mysql-connector>
+		<druid>1.0.18</druid>
+		<junit>4.12</junit>
+		<commons-lang3>3.5</commons-lang3>
+		<fastjson>1.2.31</fastjson>
+		<pagehelper.version>1.2.1</pagehelper.version>
+		<activiti>5.21.0</activiti>
+		<jackson-mapper-asl>1.9.13</jackson-mapper-asl>
+		<UserAgentUtils>1.20</UserAgentUtils>
+		<guava>19.0</guava>
+	</properties>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>http://192.168.1.41:8088/nexus/content/repositories/platForm_Release/</url>
+		</repository>
+
+		<snapshotRepository>
+			<id>snapshots</id>
+			<url>http://192.168.1.41:8088/nexus/content/repositories/platForm_snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<build>
+		<finalName>commonBaseFrame</finalName> <!-- 指定package生成的文件名为commonBaseFrame.jar -->
+	</build>
+</project>

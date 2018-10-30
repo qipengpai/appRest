@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+<meta content="yes" name="apple-mobile-web-app-capable">     
+<meta content="black" name="apple-mobile-web-app-status-bar-style">     
+<meta content="telephone=no" name="format-detection">
+<title>登录</title>
+<link th:href="@{/css/style.css}" rel="stylesheet" type="text/css"></link>
+</head>
+ 
+<body>
+	<div class="main login">
+		<div class="logo"><img th:src="@{/img/logo.png}" alt=""></div>
+		<form>
+			<label><img th:src="@{/img/user.png}" alt=""><input type="text" id="username" placeholder="用户名"></label>
+			<label><img th:src="@{/img/password.png}" alt=""><input type="password" id="password" placeholder="密码"></label>
+			<input type="button" value="登录" class="button" id="login" >
+		</form>
+	</div>
+	<div class="pop" id="loading" style="display:none">
+		<div class="popbox">
+			<div class="loading"><img th:src="@{/img/loading.gif}" alt=""><span id="loadTxt">登录中</span></div>
+		</div>
+		<div class="popbg"></div>
+	</div>
+	<div class="pop" id="alertDiv" style="display:none">
+		<div class="popbox">
+			<div class="pop-txt">
+				<span id="alertTxt"></span>
+			</div>
+			<div class="btn">
+				<a href="JavaScript:void(0);" onclick="$('#alertDiv').css('display','none')" style="width:100%">确定</a>
+			</div>
+		</div>
+		<div class="popbg"></div>
+	</div>
+	<script th:src="@{/js/jquery.min.js}"></script>
+	<script th:src="@{/js/jquery.cookie.js}"></script>
+	<script th:src="@{/js/global.js}"></script>
+	<script th:src="@{/js/json.js}"></script>
+	<script th:src="@{/js/weixin.js}"></script>
+	<script th:src="@{/js/redirect.js}"></script>
+	<script>
+	var openId,code;
+    var param={};
+	$(function(){
+		openId = $.cookie('openId');
+		 $("#login").click(function(){
+             $("#loading").css("display","block");
+	 			$.zkbr.ajax({
+		 		  	url: "../wechat/userAuthorization",
+		 		  	type:"post",
+		 		  	dataType:"json",
+		 		  	data:{"username":$("#username").val(),"password":$("#password").val(),"openId":openId},
+		 		  	success:function(data){
+						 if(data.status==200)
+		 				 {
+		 				     $("#loading").hide();
+	 	 					//window.location.href="../wechat/main?openId="+openId;
+	 	 					 $.cookie('username', data.name);
+                             param = {openId:openId,method:'main'};
+                             redirect(param);
+	   	 			 }else
+		 				 {
+		 					 //alert(data.message);
+                             $("#loading").hide();
+                             $("#alertDiv").css('display','block');
+                             $("#alertTxt").html(data.message);
+		 				 }
+		  		  	}
+				});
+			 });	
+			 
+	});
+ 	</script>
+</body>
+</html>

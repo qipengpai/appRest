@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.loan.LoanContractTemplateProductMapper">
+	
+	<select id="listLoanContractTemplateProductByProductId" resultType="com.company.platform.restapi.model.loan.LoanContractTemplateProductInfo"
+		parameterType="java.lang.String">
+		SELECT
+			ctp_id,
+			ctp_create_time,
+			ctp_update_time,
+			ctp_contract_template_id,
+			ctp_contract_template_product_id,
+			ctp_template_text,
+			ctp_model_name,
+			ctp_is_delete,
+			ctp_temp_variable,
+			ct_name AS ctp_contract_template_name
+		FROM
+			loan_contract_template_product
+		JOIN 
+			loan_contract_template 
+		ON 
+			loan_contract_template.ct_id = loan_contract_template_product.ctp_contract_template_id
+		WHERE
+			ctp_contract_template_product_id = #{productId, jdbcType=VARCHAR}
+		AND
+			ctp_is_delete = 0
+	</select>
+	
+</mapper>

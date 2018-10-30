@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.activiti.ActivitiMapper">
+
+	<select id="queryOrg" resultType="java.util.HashMap">
+		select r.orgId, o.orgName from organization o, user_dept_rel r where o.id = r.orgId and r.userId = #{userId} limit 0,1
+	</select>
+	
+	<select id="queryPoster" parameterType="java.lang.String" resultType="java.util.HashMap">
+	  select * from sys_poster where isValid = 1 and id in (select posterId from user_poster_rel where userId = #{userId})
+	</select>
+	
+	<select id="queryRoles" resultType="java.util.HashMap">
+	  SELECT s.* FROM sys_role s JOIN user_role_rel u ON s.isValid=1 AND s.id=u.roleId AND u.userId=#{userId}
+	</select>
+	
+	<select id="queryStaffDetail" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select u.userName,i.realName,i.gender,i.birthday,i.mobile,i.userId,rel.orgId,i.email,i.noticeConfigure  
+		from sys_user u left join sys_user_info i on u.id = i.userId left join user_dept_rel rel on u.id = rel.userId 
+		"where u.id = #{userId}
+	</select>
+	
+	<select id="getPerLeisureTask" parameterType="java.util.List" resultType="com.company.platform.restapi.model.activiti.WaitReceiveTask">
+	 SELECT 
+	   apply.id loanProductApplyId, apply.code,ext.busType processTypeName,pub.customerName,
+       pub.credentialNo,pro.name productName,apply.applyTime,
+       res.NAME_ taskName,'' auditName,'' organizationName,def.NAME_ processDefinitionName,def.KEY_ processDefinitionKey,
+       RES.ID_  taskId,res.TASK_DEF_KEY_ taskKey,apply.registerId,exe.PROC_INST_ID_ processInstanceId,ext.busType processType
+       FROM (
+	   SELECT DISTINCT RES.* FROM 
+	   ACT_RU_TASK RES 
+       INNER JOIN ACT_RU_IDENTITYLINK I ON I.TASK_ID_ = RES.ID_ 
+       WHERE RES.ASSIGNEE_ IS NULL AND I.TYPE_ = 'candidate' 
+       AND ( 
+       I.GROUP_ID_ IN
+       <foreach item="item" index="index" collection="userGroup"
+	      open="(" separator="," close=")">
+	        #{item}
+	  </foreach> 
+       )
+	   ORDER BY RES.CREATE_TIME_ DESC) res
+	   LEFT JOIN act_ru_execution exe ON res.PROC_INST_ID_ = exe.PROC_INST_ID_
+	   LEFT JOIN loan_product_apply apply ON exe.BUSINESS_KEY_ = apply.id		
+	   LEFT JOIN act_extension ext ON exe.PROC_DEF_ID_ = ext.wfId		
+	   LEFT JOIN customer_public pub ON apply.customerId = pub.id		
+	   LEFT JOIN loan_product pro  ON apply.loanProductId = pro.id		
+	   LEFT JOIN act_re_procdef def ON exe.PROC_DEF_ID_  = def.ID_
+	</select>
+	
+	
+	<select id="getPersonalTask" parameterType="java.util.HashMap" resultType="com.company.platform.restapi.model.activiti.WaitHandleTask">
+	 SELECT apply.id businessKey, apply.id loanProductApplyId, apply.code,ext.busType processTypeName,pub.customerName,
+       pub.credentialNo,pro.name productName,apply.applyTime,
+        res.NAME_ taskName,us.realName auditName,org.orgName organizationName,def.NAME_ processDefinitionName,def.KEY_ processDefinitionKey,
+       RES.ID_  taskId,res.TASK_DEF_KEY_ taskKey,apply.registerId ,res.CREATE_TIME_ creatTime,exe.PROC_INST_ID_ processInstanceId,ext.busType processType
+	   FROM (
+	   SELECT DISTINCT RES.* FROM 
+	   ACT_RU_TASK RES WHERE  RES.ASSIGNEE_ = #{user}
+	   ORDER BY RES.CREATE_TIME_ DESC ) res
+	   LEFT JOIN act_ru_execution exe ON res.PROC_INST_ID_ = exe.PROC_INST_ID_
+	   LEFT JOIN loan_product_apply apply ON exe.BUSINESS_KEY_ = apply.id		
+	   LEFT JOIN act_extension ext ON exe.PROC_DEF_ID_ = ext.wfId		
+	   LEFT JOIN customer_public pub ON apply.customerId = pub.id		
+	   LEFT JOIN loan_product pro  ON apply.loanProductId = pro.id		
+	   LEFT JOIN act_re_procdef def ON exe.PROC_DEF_ID_  = def.ID_		
+	   LEFT JOIN sys_user_info us ON us.userId = #{userId}
+	   LEFT JOIN user_dept_rel re ON re.userId = #{userId}
+	   LEFT JOIN organization org ON re.orgId = org.id
+	   WHERE ext.busType='loan' 
+	   <if test="end != null">
+	   		LIMIT #{start},#{end}
+	   </if>
+	</select>
+	
+	<select id="getPersonalTaskCount"  parameterType="java.lang.String" resultType="java.lang.Integer">
+	 SELECT count(1)
+	   FROM (
+	   SELECT DISTINCT RES.* FROM 
+	   ACT_RU_TASK RES WHERE  RES.ASSIGNEE_ = #{user}
+	   ORDER BY RES.CREATE_TIME_ DESC ) res
+	   LEFT JOIN act_extension ext ON res.PROC_DEF_ID_ = ext.wfId
+	   WHERE ext.busType='loan'  
+	</select>
+	
+	<insert id="addHandleReason" parameterType="java.util.HashMap">
+		insert into act_app_reason(id, type, reason, commentId, commitDate, procInstId) values(UUID(), #{type}, #{reason}, #{commentId}, SYSDATE(), #{processInstanceId})
+	</insert>
+	
+	<select id="getTheActTaskset"  parameterType="java.util.HashMap"  resultType="com.company.platform.base.model.activiti.ActTaskset">
+	    select 
+        id, wfId, wfKey, productId, userIds, organizationIds, functionIds, authIds, posterids,
+        roleIds, userId, taskName, taskkey, taskSort, operDate
+        from act_taskset
+        where productId = #{productId} and wfId = #{wfId} and taskkey = #{taskKey} order by operDate desc limit 0, 1
+	</select>
+	
+</mapper>

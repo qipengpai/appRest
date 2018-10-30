@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.base.dao.sys.RoleMapper">
+	<select id="queryRoleDetailByIds" resultType="java.util.HashMap">
+	  select r.id, r.roleCode, r.roleName, r.eDesc, r.isValid, r.createUser, r.createTime from sys_role r where r.id in
+	  <foreach item="item" index="index" collection="roleStrs"
+	      open="(" separator="," close=")">
+	        #{item}
+	  </foreach>
+	</select>
+</mapper>

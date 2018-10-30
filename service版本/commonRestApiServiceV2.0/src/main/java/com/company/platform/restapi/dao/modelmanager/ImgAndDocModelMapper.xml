@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.modelmanager.ImgAndDocModelMapper">
+	<select id="getImgInfoModelsByProductId" resultType="com.company.platform.restapi.model.modelmanager.ImgInfoModel"
+			parameterType="java.lang.String">
+		select lpm.loanProductId productId, midc.id titleId, midc.`name` titleName, midc.sort titleSort, midc.expl titleExpl, midc.imgDocId modelId from loan_product_model_v lpm, v_model_image_document mid, v_model_img_doc_class midc where lpm.modelType = 'IMM' and lpm.modelCode = mid.`code` and lpm.modelVersion = mid.version and mid.id = midc.imgDocId and lpm.loanProductId = #{productId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getImgDocModelInfo" resultType="com.company.platform.restapi.model.modelmanager.ImgDocModelInfo"
+			parameterType="java.lang.String">
+			SELECT
+			midc.id ,
+			midc.`name`,
+			midc.sort ,
+			midc.expl ,
+			midc.imgDocId
+		FROM
+			loan_product_model_v lpm,
+			v_model_image_document mid,
+			v_model_img_doc_class midc
+		WHERE
+			lpm.modelType = 'IMM'
+		AND lpm.modelCode = mid.`code`
+		AND lpm.modelVersion = mid.version
+		AND mid.id = midc.imgDocId
+		AND lpm.loanProductId = #{productId, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getImgDocModelDataInfo" resultType="com.company.platform.restapi.model.modelmanager.ImgDocModelDataInfo"
+			parameterType="java.lang.String">
+			SELECT
+			mmd.recordId,
+			mmd.extension,
+			mmd.fileName,
+			mmd.filePath,
+			DATE_FORMAT(
+		mmd.updateTime,
+		'%Y-%m-%d %H:%i:%s'
+		) updateTime
+		FROM
+			v_model_material_record mmr,
+			v_model_material_data mmd
+		WHERE
+			mmr.id = mmd.recordId
+		AND mmr.businessId = #{loanProductApplyId, jdbcType=VARCHAR}
+	</select>
+
+	<select id="getImgAndDocModelById" resultType="com.company.platform.restapi.model.modelmanager.ImgAndDocModel"
+			parameterType="java.lang.String">
+			select `id`, `code`, `name`, `expl`, `registrant`, `createTime`, `useStatus`, `version`, `publishStatus`, `publishTime` from `v_model_image_document` where id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getImgAndDocModelByCodeAndVersion" resultType="com.company.platform.restapi.model.modelmanager.ImgAndDocModel"
+			parameterType="java.lang.String">
+			select `id`, `code`, `name`, `expl`, `registrant`, `createTime`, `useStatus`, `version`, `publishStatus`, `publishTime` from `v_model_image_document` where code = #{code, jdbcType=VARCHAR} and version = #{version,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectLoanProductModelVByLoanProductIdAndModelType" resultType="com.company.platform.restapi.model.loan.LoanProductModelV"
+			parameterType="java.lang.String">
+			select * from loan_product_model_v where loanProductId = #{loanProductId, jdbcType=VARCHAR} and modelType = #{modelType,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getImgAndDocTitleById" resultType="com.company.platform.restapi.model.modelmanager.ImgAndDocTitle"
+			parameterType="java.lang.String">
+			select `id`, `code`, `name`, `expl`, `sort`, `imgDocId` from `v_model_img_doc_class` where id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getMaterialDataId" resultType="java.lang.String">
+			select id from v_model_material_record where businessId = #{businessId, jdbcType=VARCHAR}
+	</select>
+	
+	<insert id="saveMaterialDataForRecord">
+		insert into v_model_material_record(id, createDate, functionExplain, modelId, businessId) values(#{id, jdbcType=VARCHAR}, #{createDate}, #{functionExplain, jdbcType=VARCHAR}, #{modelId, jdbcType=VARCHAR}, #{businessId, jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="saveMaterialData">
+		insert into v_model_material_data(id, recordId, extension, modelCode, classCode, fileName, filePath, orgId, share, uploadTime) values(#{id, jdbcType=VARCHAR}, #{recordId, jdbcType=VARCHAR}, #{extension, jdbcType=VARCHAR}, #{modelCode, jdbcType=VARCHAR}, #{classCode, jdbcType=VARCHAR}, #{fileName, jdbcType=VARCHAR}, #{filePath, jdbcType=VARCHAR}, #{orgId, jdbcType=VARCHAR}, #{share, jdbcType=VARCHAR}, SYSDATE())
+	</insert>
+	
+	<select id="getFileInfoByModelInfo" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		SELECT
+			mmd.id,
+			mmd.fileName,
+			mmd.filePath
+		FROM
+			v_model_material_record mmr,
+			v_model_material_data mmd,
+			v_model_img_doc_class midc
+		WHERE
+			mmr.id = mmd.recordId
+		AND mmd.classCode = midc.`code`
+		AND mmr.modelId = midc.imgDocId
+		AND mmr.businessId = #{loanProductApplyId, jdbcType=VARCHAR} and midc.id = #{classId, jdbcType=VARCHAR} and mmd.id = #{id, jdbcType=VARCHAR}
+	</select>
+	
+	<delete id="deleteFileInfoById">
+		delete from v_model_material_data where id = #{id, jdbcType=VARCHAR}
+	</delete>
+</mapper>

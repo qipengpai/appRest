@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.platform.restapi.dao.setup.MobileSetUpMapper">
+	<parameterMap type="java.util.HashMap" id="paraMap" />
+	
+	
+	<select id="getUserById" resultType="java.util.HashMap"
+		parameterType="java.lang.String">
+		SELECT
+			*
+		FROM
+			sys_user
+		WHERE
+			id = #{id}
+	</select>
+	
+	<update id="modifyPwd" parameterType="java.lang.String">
+		UPDATE sys_user SET
+			passWord = #{passWord,jdbcType=VARCHAR}
+		WHERE id = #{id}
+	</update>	
+    
+	<select id="getBannerInfoList" resultType="com.company.platform.restapi.model.setup.AppBannerInfo">
+		SELECT
+			*
+		FROM
+			banner_info
+		WHERE
+			is_show = 2 
+		AND
+			appName = #{appName}
+		ORDER BY order_id
+	</select>
+	<select id="getAppVserionByType" resultType="com.company.platform.restapi.model.setup.AppVersion"
+		parameterType="Map">
+		SELECT
+			id,
+			MAX(version) version,
+			appType,
+			isUsed,
+			url,
+			updateTime,
+			content,
+			size,
+			appName
+		FROM
+			appversion
+		WHERE
+			appType = #{appType} 
+		AND
+			appName = #{appName} 
+		AND isUsed=1
+	</select>
+</mapper>
